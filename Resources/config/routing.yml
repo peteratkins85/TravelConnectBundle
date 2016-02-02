@@ -1,0 +1,47 @@
+
+oni_travel_connect_index:
+    path:     /admin/travel-connect/users
+    defaults: { _controller: oni_travel_connect_user_controller:indexAction }
+
+oni_travel_connect_add:
+    path:     /admin/travel-connect/user/add
+    defaults: { _controller: oni_travel_connect_user_controller:addAction }
+
+oni_travel_connect_edit:
+    path:     /admin/travel-connect/user/edit/{id}
+    defaults: { _controller: oni_travel_connect_user_controller:editAction }
+
+#Front End Routes
+
+oni_travel_connect_login:
+    path: /login
+    host:     "tc.{domain}"
+    defaults:
+        _controller: oni_travel_connect_auth_controller:loginAction
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'
+oni_travel_connect_home:
+    path: /
+    host:     "tc.{domain}"
+    defaults:
+        _controller: oni_travel_connect_index_controller:indexAction
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'
+oni_travel_connect_check:
+    path:      /login_check
+    host:     "tc.{domain}"
+    defaults:
+        _controller: UserManagerBundle:Security:check
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'
+oni_travel_connect_logout:
+    path:      /logout
+    host:     "tc.{domain}"
+    defaults:
+        _controller: UserManagerBundle:Security:logout
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'

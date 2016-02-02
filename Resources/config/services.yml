@@ -1,0 +1,47 @@
+services:
+    oni_travel_connect_user:
+        class: Oni\TravelConnectBundle\Entity\User
+    oni_travel_connect_user_groups:
+        class: Oni\TravelConnectBundle\Entity\UserGroups
+    oni_travel_connect_user_repository:
+        class: Oni\TravelConnectBundle\Entity\Repository\UsersRepository
+        factory: [ '@doctrine.orm.default_entity_manager',  getRepository]
+        arguments:
+                - Oni\TravelConnectBundle\Entity\User
+    oni_travel_connect_twig_helper:
+        class: Oni\TravelConnectBundle\Twig\TravelConnectTwigHelper
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: twig.extension }
+    oni_travel_connect_user_provider:
+        class: Oni\TravelConnectBundle\Security\UserProvider
+        arguments: ["@oni_travel_connect_user_repository" , "@doctrine.orm.entity_manager"]
+    oni_travel_connect_user_controller_class:
+        class: Oni\TravelConnectBundle\Controller\UserController
+        arguments:
+                - '@oni_travel_connect_user_repository'
+    oni_travel_connect_user_controller:
+        class: Oni\TravelConnectBundle\Controller\UserController
+        factory: [ '@oni_controller_factory',  getController]
+        arguments:
+                - '@oni_travel_connect_user_controller_class'
+    oni_travel_connect_user.service:
+        class: Oni\TravelConnectBundle\Services\TravelConnectUserService
+        arguments:
+                - '@oni_travel_connect_user_repository'
+    oni_travel_connect_provider_container:
+        class: Oni\TravelConnectBundle\Providers\TravelConnectProviderContainer
+    #Providers
+    oni_travel_connect_provider.wts:
+        class: Oni\TravelConnectBundle\Providers\WtsProvider
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: oni_tavel_connect.provider }
+    oni_travel_connect_provider_client.wts:
+        class: Oni\TravelConnectBundle\ProviderClients\WtsApiClient
+        tags:
+            - { name: guzzle.client }
+
+

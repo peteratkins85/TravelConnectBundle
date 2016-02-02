@@ -1,0 +1,19 @@
+services:
+    oni_travel_connect_auth_controller_class:
+        class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
+#        arguments:
+#                - '@oni_travel_connect_user_repository'
+    oni_travel_connect_auth_controller:
+        class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
+        factory: [ '@oni_controller_factory',  getController]
+        arguments:
+                - '@oni_travel_connect_auth_controller_class'
+    oni_travel_connect_index_controller_class:
+            class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
+    #        arguments:
+    #                - '@oni_travel_connect_user_repository'
+    oni_travel_connect_index_controller:
+        class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
+        factory: [ '@oni_controller_factory',  getController]
+        arguments:
+                - '@oni_travel_connect_index_controller_class'
