@@ -118,53 +118,7 @@ class WtsApiClient extends Client
 
     }
 
-    public function makeCall(){
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, ($this->ssl ? 'https://'  : 'http://' ) . $this->url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect: ') );
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        if ($this->connectionTimeout) {
-            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $this->connectionTimeout);
-        }
-
-        if ($this->timeout) {
-            curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeout);
-        }
-
-        if($this->ssl) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        }
-
-        $this->RAWresponse = curl_exec($ch);
-        $this->response = array();
-        $this->errno = curl_errno($ch);
-        $this->err_str = curl_error($ch);
-        $this->curl_getinfo = curl_getinfo($ch);
-
-        curl_close($ch);
-
-        if ($this->errno > 0) {
-            trigger_error('SpectrumAPIClient Request Failed: ' . $this->errno . ' - ' . $this->err_str);
-            DisplayErrMsg('SpectrumAPIClient Request Failed: ' . $this->errno . ' - ' . $this->err_str . "\ncurl_getinfo = " . print_r($this->curl_getinfo, true) . "\nrequest = " . print_r($this->request, true));
-            //print 'Request Failed: ' . $this->errno . ' - ' . $this->err_str;
-        } elseif ($this->curl_getinfo["http_code"] != 200) {
-            trigger_error('SpectrumAPIClient HTTP Error: Response Code ' . $this->curl_getinfo["http_code"] . ': ' . print_r($this->curl_getinfo, true));
-            DisplayErrMsg('SpectrumAPIClient HTTP Error: Response Code ' . $this->curl_getinfo["http_code"] . ': ' . print_r($this->curl_getinfo, true) . "\n" . print_r($this->request, true));
-            //print 'HTTP Error: Response Code ' . $this->curl_getinfo["http_code"];
-        } else {
-            // Request must of been ok.
-            $this->response = json_decode($this->RAWresponse);
-            //trigger_error('response = ' . print_r($this->response, true) . "\ncurl_getinfo = " . print_r($this->curl_getinfo, true));
-            //DisplayErrMsg('SpectrumAPIClient HTTP: response = ' . print_r($this->response, true) . "\ncurl_getinfo = " . print_r($this->curl_getinfo, true) . "\nrequest = " . print_r($this->request, true));
-            return(True);
-        }
-
-        return false;
-
-    }
 
 
 
