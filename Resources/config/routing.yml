@@ -33,7 +33,7 @@ oni_travel_connect_check:
     path:      /login_check
     host:     "tc.{domain}"
     defaults:
-        _controller: UserManagerBundle:Security:check
+        _controller: oni_travel_connect_auth_controller:loginCheck
         domain: '%domain%'
     requirements:
         domain: '%domain%'
@@ -41,7 +41,25 @@ oni_travel_connect_logout:
     path:      /logout
     host:     "tc.{domain}"
     defaults:
-        _controller: UserManagerBundle:Security:logout
+        _controller: oni_travel_connect_auth_controller:logout
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'
+
+oni_travel_connect_hotel_search:
+    path:      /hotel-search
+    host:     "tc.{domain}"
+    defaults:
+        _controller: oni_travel_connect_hotel_search_controller:indexAction
+        domain: '%domain%'
+    requirements:
+        domain: '%domain%'
+
+oni_travel_connect_account:
+    path:      /account
+    host:     "tc.{domain}"
+    defaults:
+        _controller: oni_travel_connect_account_controller:indexAction
         domain: '%domain%'
     requirements:
         domain: '%domain%'

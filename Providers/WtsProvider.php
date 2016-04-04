@@ -37,7 +37,6 @@ class WtsProvider implements HotelProviderInterface, ProviderInterface
     public function searchHotel($search = array())
     {
 
-        $this->apiClient->searchHotel();
 
     }
 

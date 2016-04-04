@@ -3,10 +3,9 @@
 namespace Oni\TravelConnectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use FOS\UserBundle\Model\UserInterface;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Oni\TravelConnectBundle\Entity\TravelConnectUserInterface;
+use Oni\TravelConnectBundle\Entity\UserInterface;
 
 /**
  * User
@@ -14,7 +13,7 @@ use Oni\TravelConnectBundle\Entity\TravelConnectUserInterface;
  * @ORM\Table(name="oni_tc_users")
  * @ORM\Entity(repositoryClass="Oni\TravelConnectBundle\Entity\Repository\UsersRepository")
  */
-class User implements AdvancedUserInterface, TravelConnectUserInterface
+class User implements AdvancedUserInterface, UserInterface
 {
     /**
      * @var int

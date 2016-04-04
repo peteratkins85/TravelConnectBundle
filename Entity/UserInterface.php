@@ -9,7 +9,7 @@
 namespace Oni\TravelConnectBundle\Entity;
 
 
-interface TravelConnectUserInterface {
+interface UserInterface {
 
     const ROLE_DEFAULT = 'TRAVEL_CONNECT_USER';
 

@@ -27,7 +27,6 @@ class ProviderHotelApiForm  extends AbstractType
           ->add('number-of-rooms')
           ->add('hotel-name')
           ->add('mark-up')
-
         ;
     }
 

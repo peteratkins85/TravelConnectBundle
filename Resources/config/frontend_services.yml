@@ -1,19 +1,36 @@
+parameters:
+    oni_travel_connect_auth_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
+    oni_travel_connect_hotel_search_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\HotelSearchController
+    oni_travel_connect_index_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
+    oni_travel_connect_account_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\AccountController
+
+
 services:
     oni_travel_connect_auth_controller_class:
-        class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
-#        arguments:
-#                - '@oni_travel_connect_user_repository'
+        class: '%oni_travel_connect_auth_controller_class%'
     oni_travel_connect_auth_controller:
-        class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
+        class: '%oni_travel_connect_auth_controller_class%'
         factory: [ '@oni_controller_factory',  getController]
         arguments:
                 - '@oni_travel_connect_auth_controller_class'
     oni_travel_connect_index_controller_class:
-            class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
-    #        arguments:
-    #                - '@oni_travel_connect_user_repository'
+            class: "%oni_travel_connect_index_controller_class%"
     oni_travel_connect_index_controller:
-        class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
+            class: "%oni_travel_connect_index_controller_class%"
+            factory: [ '@oni_controller_factory',  getController]
+            arguments:
+                    - '@oni_travel_connect_index_controller_class'
+    oni_travel_connect_hotel_search_controller_class:
+            class: "%oni_travel_connect_hotel_search_controller_class%"
+    oni_travel_connect_hotel_search_controller:
+        class: "%oni_travel_connect_hotel_search_controller_class%"
         factory: [ '@oni_controller_factory',  getController]
         arguments:
-                - '@oni_travel_connect_index_controller_class'
+                - '@oni_travel_connect_hotel_search_controller_class'
+    oni_travel_connect_account_controller_class:
+            class: "%oni_travel_connect_account_controller_class%"
+    oni_travel_connect_account_controller:
+        class: "%oni_travel_connect_account_controller_class%"
+        factory: [ '@oni_controller_factory',  getController]
+        arguments:
+                - '@oni_travel_connect_account_controller_class'

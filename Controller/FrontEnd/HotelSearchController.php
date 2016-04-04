@@ -5,17 +5,16 @@ namespace Oni\TravelConnectBundle\Controller\FrontEnd;
 use Oni\CoreBundle\Controller\CoreController;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
-class HotelController extends CoreController
+class HotelSearchController extends CoreController
 {
 
-    public function indexAction($name)
+    public function indexAction()
     {
 
         $this->denyAccessUnlessGranted('ROLE_TRAVEL_CONNECT_USER', null, 'Unable to access this page!');
-        $this->get('oni_travel_connect_provider.wts')->searchHotel();
+        $this->get('oni_travel_connect_provider.wts')->searchHote();
 
-
-        return $this->render('@travel_connect/'.$this->travelConnectTheme.'/hotelSearch.html.twig', array(
+        return $this->render('@travel_connect/'.$this->travelConnectTheme.'/hotel_search.html.twig', array(
         ));
 
     }

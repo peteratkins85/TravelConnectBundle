@@ -13,7 +13,6 @@ use Oni\TravelConnectBundle\Entity\Repository\UsersRepository;
 
 class TravelConnectUserService {
 
-
     public function __construct(UsersRepository $travelConnectUserRepository) {
 
         $this->travelConnectUserRepository = $travelConnectUserRepository;
