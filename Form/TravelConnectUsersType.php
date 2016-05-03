@@ -1,12 +1,12 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Form;
+namespace Oni\TravelPortBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class TravelConnectUsersType extends AbstractType
+class TravelPortUsersType extends AbstractType
 {
     /**
      * @param FormBuilderInterface $builder
@@ -31,7 +31,7 @@ class TravelConnectUsersType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Oni\TravelConnectBundle\Entity\TravelConnectUsers'
+            'data_class' => 'Oni\TravelPortBundle\Entity\TravelPortUsers'
         ));
     }
 }

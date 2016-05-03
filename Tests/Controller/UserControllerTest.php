@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Tests\Controller;
+namespace Oni\TravelPortBundle\Tests\Controller;
 
 
 use Oni\CoreBundle\Tests\CoreTestCase;

@@ -1,8 +1,8 @@
 parameters:
-    oni_travel_connect_auth_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\AuthController
-    oni_travel_connect_hotel_search_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\HotelSearchController
-    oni_travel_connect_index_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\IndexController
-    oni_travel_connect_account_controller_class: Oni\TravelConnectBundle\Controller\FrontEnd\AccountController
+    oni_travel_connect_auth_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\AuthController
+    oni_travel_connect_hotel_search_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\HotelSearchController
+    oni_travel_connect_index_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\IndexController
+    oni_travel_connect_account_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\AccountController
 
 
 services:

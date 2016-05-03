@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\DependencyInjection;
+namespace Oni\TravelPortBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class TravelConnectExtension extends Extension implements  PrependExtensionInterface
+class TravelPortExtension extends Extension implements  PrependExtensionInterface
 {
 
     /**
@@ -20,7 +20,7 @@ class TravelConnectExtension extends Extension implements  PrependExtensionInter
      */
     protected $container;
 
-    protected $providerNameSpace = '\\Oni\\TravelConnectBundle\\Providers\\';
+    protected $providerNameSpace = '\\Oni\\TravelPortBundle\\Providers\\';
 
     protected $providerPostFix = 'Provider';
 

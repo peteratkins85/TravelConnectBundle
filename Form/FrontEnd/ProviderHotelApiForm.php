@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Form\FrontEnd;
+namespace Oni\TravelPortBundle\Form\FrontEnd;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -36,7 +36,7 @@ class ProviderHotelApiForm  extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-          'data_class' => 'Oni\TravelConnectBundle\Entity\TravelConnectUsers'
+          'data_class' => 'Oni\TravelPortBundle\Entity\TravelPortUsers'
         ));
     }
 

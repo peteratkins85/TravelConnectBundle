@@ -6,14 +6,14 @@
  * Time: 03:40
  */
 
-namespace Oni\TravelConnectBundle\DependencyInjection\Compiler;
+namespace Oni\TravelPortBundle\DependencyInjection\Compiler;
 
 
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-class TravelConnectCompilerPass implements CompilerPassInterface
+class TravelPortCompilerPass implements CompilerPassInterface
 {
 
     /**

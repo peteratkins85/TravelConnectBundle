@@ -1,10 +1,10 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Providers;
+namespace Oni\TravelPortBundle\Providers;
 
-use Oni\TravelConnectBundle\ProviderSupport\ProviderInterface;
+use Oni\TravelPortBundle\ProviderSupport\ProviderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Oni\TravelConnectBundle\ProviderSupport\HotelProviderInterface;
+use Oni\TravelPortBundle\ProviderSupport\HotelProviderInterface;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * http://www.wts-travel.com/
  *
- * @package Oni\TravelConnectBundle\Providers
+ * @package Oni\TravelPortBundle\Providers
  *
  */
 class WtsProvider implements HotelProviderInterface, ProviderInterface

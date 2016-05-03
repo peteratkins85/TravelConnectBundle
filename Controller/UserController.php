@@ -1,26 +1,25 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Controller;
+namespace Oni\TravelPortBundle\Controller;
 
 use Oni\CoreBundle\Controller\CoreController;
-use Oni\TravelConnectBundle\Entity\Repository\UsersRepository;
+use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
 
 class UserController extends CoreController
 {
 
-    public function __construct(UsersRepository $travelConnectUserRepository) {
+    public function __construct(UsersRepository $travelPortUserRepository) {
 
-        $this->travelConnectUserRepository = $travelConnectUserRepository;
+        $this->travelPortUserRepository = $travelPortUserRepository;
 
     }
 
     public function indexAction()
     {
+        $travelPortUsers = $this->travelPortUserRepository->findAll();
 
-        $travelConnectUsers = $this->travelConnectUserRepository->findAll();
-
-        return $this->render('TravelConnectBundle:User:index.html.twig', array(
-            'travelConnect' => $travelConnectUsers,
+        return $this->render('TravelPortBundle:User:index.html.twig', array(
+            'travelPort' => $travelPortUsers,
         ));
     }
 
@@ -30,14 +29,14 @@ class UserController extends CoreController
         $TcUser = $this->get('oni_travel_connect_user');
 
 
-        return $this->render('TravelConnectBundle:User:add.html.twig', array(
+        return $this->render('TravelPortBundle:User:add.html.twig', array(
             // ...
         ));
     }
 
     public function editAction($id)
     {
-        return $this->render('TravelConnectBundle:User:edit.html.twig', array(
+        return $this->render('TravelPortBundle:User:edit.html.twig', array(
             // ...
         ));
     }

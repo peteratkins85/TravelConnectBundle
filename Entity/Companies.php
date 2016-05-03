@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Entity;
+namespace Oni\TravelPortBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Companies
  *
  * @ORM\Table(name="companies")
- * @ORM\Entity(repositoryClass="Oni\TravelConnectBundle\Repository\CompaniesRepository")
+ * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Repository\CompaniesRepository")
  */
 class Companies
 {

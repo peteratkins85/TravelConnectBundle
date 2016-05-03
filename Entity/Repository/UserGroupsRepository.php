@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Entity\Repository;
+namespace Oni\TravelPortBundle\Entity\Repository;
 
 /**
  * UserGroupsRepository

@@ -6,7 +6,7 @@
  * Time: 21:43
  */
 
-namespace Oni\TravelConnectBundle\ProviderClients;
+namespace Oni\TravelPortBundle\ProviderClients;
 
 use Guzzle\Service\Client;
 use Symfony\Component\Config\Definition\Exception\Exception;

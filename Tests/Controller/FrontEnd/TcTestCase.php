@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Tests\Controller\FrontEnd;
+namespace Oni\TravelPortBundle\Tests\Controller\FrontEnd;
 
 trait TcTestCase
 {

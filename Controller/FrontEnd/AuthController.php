@@ -1,9 +1,9 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Controller\FrontEnd;
+namespace Oni\TravelPortBundle\Controller\FrontEnd;
 
 use Oni\CoreBundle\Controller\CoreController;
-use Oni\TravelConnectBundle\Entity\Repository\UsersRepository;
+use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 class AuthController extends CoreController
@@ -39,7 +39,7 @@ class AuthController extends CoreController
 
         echo $error;
 
-        return $this->render('@travel_connect/'.$this->travelConnectTheme.'/login.html.twig', array(
+        return $this->render('@travel_connect/'.$this->travelPortTheme.'/login.html.twig', array(
           'last_username' => $lastUsername,
           'error' => $error,
           'csrf_token' => $csrfToken,

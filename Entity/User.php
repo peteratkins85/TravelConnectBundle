@@ -1,17 +1,17 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Entity;
+namespace Oni\TravelPortBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
 use Symfony\Component\Security\Core\User\AdvancedUserInterface;
-use Oni\TravelConnectBundle\Entity\UserInterface;
+use Oni\TravelPortBundle\Entity\UserInterface;
 
 /**
  * User
  *
  * @ORM\Table(name="oni_tc_users")
- * @ORM\Entity(repositoryClass="Oni\TravelConnectBundle\Entity\Repository\UsersRepository")
+ * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Entity\Repository\UsersRepository")
  */
 class User implements AdvancedUserInterface, UserInterface
 {
@@ -157,7 +157,7 @@ class User implements AdvancedUserInterface, UserInterface
     /**
      * @var Collection
      *
-     * @ORM\OneToOne(targetEntity="Oni\TravelConnectBundle\Entity\UserGroups")
+     * @ORM\OneToOne(targetEntity="Oni\TravelPortBundle\Entity\UserGroups")
      * @ORM\JoinColumn(name="groupId" , referencedColumnName="id")
      *
      */
@@ -693,11 +693,11 @@ class User implements AdvancedUserInterface, UserInterface
     /**
      * Set group
      *
-     * @param \Oni\TravelConnectBundle\Entity\UserGroups $group
+     * @param \Oni\TravelPortBundle\Entity\UserGroups $group
      *
      * @return User
      */
-    public function setGroup(\Oni\TravelConnectBundle\Entity\UserGroups $group = null)
+    public function setGroup(\Oni\TravelPortBundle\Entity\UserGroups $group = null)
     {
         $this->group = $group;
 
@@ -707,7 +707,7 @@ class User implements AdvancedUserInterface, UserInterface
     /**
      * Get group
      *
-     * @return \Oni\TravelConnectBundle\Entity\UserGroups
+     * @return \Oni\TravelPortBundle\Entity\UserGroups
      */
     public function getGroup()
     {

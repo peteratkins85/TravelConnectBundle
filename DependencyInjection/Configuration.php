@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\DependencyInjection;
+namespace Oni\TravelPortBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -80,7 +80,7 @@ class Configuration implements ConfigurationInterface
     $node
       ->addDefaultsIfNotSet()
       ->children()
-        ->scalarNode('wts_class')->cannotBeEmpty()->defaultValue('Oni\\TravelConnectBundle\\Providers\\WtsProvider')->end()
+        ->scalarNode('wts_class')->cannotBeEmpty()->defaultValue('Oni\\TravelPortBundle\\Providers\\WtsProvider')->end()
       ->end()
     ;
 

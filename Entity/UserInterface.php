@@ -6,7 +6,7 @@
  * Time: 14:22
  */
 
-namespace Oni\TravelConnectBundle\Entity;
+namespace Oni\TravelPortBundle\Entity;
 
 
 interface UserInterface {

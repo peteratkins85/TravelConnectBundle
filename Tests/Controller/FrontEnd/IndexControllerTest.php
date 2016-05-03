@@ -1,8 +1,8 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Tests\Controller;
+namespace Oni\TravelPortBundle\Tests\Controller;
 
-use Oni\TravelConnectBundle\Tests\Controller\FrontEnd\TcTestCase;
+use Oni\TravelPortBundle\Tests\Controller\FrontEnd\TcTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class IndexControllerTest extends WebTestCase

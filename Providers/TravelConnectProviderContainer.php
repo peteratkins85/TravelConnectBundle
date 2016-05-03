@@ -6,12 +6,12 @@
  * Time: 03:27
  */
 
-namespace Oni\TravelConnectBundle\Providers;
+namespace Oni\TravelPortBundle\Providers;
 
 
-use Oni\TravelConnectBundle\ProviderSupport\ProviderInterface;
+use Oni\TravelPortBundle\ProviderSupport\ProviderInterface;
 
-class TravelConnectProviderContainer
+class TravelPortProviderContainer
 {
 
     public function __construct()

@@ -1,11 +1,11 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Twig;
+namespace Oni\TravelPortBundle\Twig;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 
-class TravelConnectTwigHelper extends \Twig_Extension {
+class TravelPortTwigHelper extends \Twig_Extension {
 
     /**
      * @var \Symfony\Component\DependencyInjection\ContainerInterface

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelConnectBundle\ProviderSupport;
+namespace Oni\TravelPortBundle\ProviderSupport;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 

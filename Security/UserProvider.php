@@ -1,14 +1,14 @@
 <?php
 
-namespace Oni\TravelConnectBundle\Security;
+namespace Oni\TravelPortBundle\Security;
 
 
-use Oni\TravelConnectBundle\Entity\Repository\UsersRepository;
+use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
-use Oni\TravelConnectBundle\Entity\User;
+use Oni\TravelPortBundle\Entity\User;
 
 
 class UserProvider implements UserProviderInterface
@@ -58,6 +58,6 @@ class UserProvider implements UserProviderInterface
 
     public function supportsClass($class)
     {
-        return $class === 'Oni\TravelConnectBundle\Entity\Users';
+        return $class === 'Oni\TravelPortBundle\Entity\Users';
     }
 }
