@@ -14,9 +14,9 @@ class IndexController extends CoreController
     {
 
         $this->denyAccessUnlessGranted('ROLE_TRAVEL_CONNECT_USER', null, 'Unable to access this page!');
-        $this->get('oni_travel_connect_provider.wts')->searchHotel();
+        $this->get('oni_travel_port_provider.wts')->searchHotel();
 
-        return $this->render('@travel_connect/'.$this->travelPortTheme.'/index.html.twig', array(
+        return $this->render('@travel_port/'.$this->travelPortTheme.'/index.html.twig', array(
         ));
 
     }

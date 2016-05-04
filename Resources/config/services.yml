@@ -1,45 +1,45 @@
 services:
-    oni_travel_connect_user:
+    oni_travel_port_user:
         class: Oni\TravelPortBundle\Entity\User
-    oni_travel_connect_user_groups:
+    oni_travel_port_user_groups:
         class: Oni\TravelPortBundle\Entity\UserGroups
-    oni_travel_connect_user_repository:
+    oni_travel_port_user_repository:
         class: Oni\TravelPortBundle\Entity\Repository\UsersRepository
         factory: [ '@doctrine.orm.default_entity_manager',  getRepository]
         arguments:
                 - Oni\TravelPortBundle\Entity\User
-    oni_travel_connect_twig_helper:
+    oni_travel_port_twig_helper:
         class: Oni\TravelPortBundle\Twig\TravelPortTwigHelper
         arguments:
             - '@service_container'
         tags:
             - { name: twig.extension }
-    oni_travel_connect_user_provider:
+    oni_travel_port_user_provider:
         class: Oni\TravelPortBundle\Security\UserProvider
-        arguments: ["@oni_travel_connect_user_repository" , "@doctrine.orm.entity_manager"]
-    oni_travel_connect_user_controller_class:
+        arguments: ["@oni_travel_port_user_repository" , "@doctrine.orm.entity_manager"]
+    oni_travel_port_user_controller_class:
         class: Oni\TravelPortBundle\Controller\UserController
         arguments:
-                - '@oni_travel_connect_user_repository'
-    oni_travel_connect_user_controller:
+                - '@oni_travel_port_user_repository'
+    oni_travel_port_user_controller:
         class: Oni\TravelPortBundle\Controller\UserController
         factory: [ '@oni_controller_factory',  getController]
         arguments:
-                - '@oni_travel_connect_user_controller_class'
-    oni_travel_connect_user.service:
+                - '@oni_travel_port_user_controller_class'
+    oni_travel_port_user.service:
         class: Oni\TravelPortBundle\Services\TravelPortUserService
         arguments:
-                - '@oni_travel_connect_user_repository'
-    oni_travel_connect_provider_container:
+                - '@oni_travel_port_user_repository'
+    oni_travel_port_provider_container:
         class: Oni\TravelPortBundle\Providers\TravelPortProviderContainer
     #Providers
-    oni_travel_connect_provider.wts:
+    oni_travel_port_provider.wts:
         class: Oni\TravelPortBundle\Providers\WtsProvider
         arguments:
             - '@service_container'
         tags:
-            - { name: oni_tavel_connect.provider }
-    oni_travel_connect_provider_client.wts:
+            - { name: oni_travel_port.provider }
+    oni_travel_port_provider_client.wts:
         class: Oni\TravelPortBundle\ProviderClients\WtsApiClient
         tags:
             - { name: guzzle.client }

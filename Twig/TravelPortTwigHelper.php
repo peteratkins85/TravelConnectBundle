@@ -23,8 +23,8 @@ class TravelPortTwigHelper extends \Twig_Extension {
      */
     public function getFunctions() {
         return array(
-          'getTheme'             => new \Twig_SimpleFunction('get_travel_connect_theme', array($this, 'getTheme')),
-          'getThemeAssetPath' => new \Twig_SimpleFunction('get_travel_connect_theme_asset_path', array($this, 'getThemeAssetPath')),
+          'getTheme'             => new \Twig_SimpleFunction('get_travel_port_theme', array($this, 'getTheme')),
+          'getThemeAssetPath' => new \Twig_SimpleFunction('get_travel_port_theme_asset_path', array($this, 'getThemeAssetPath')),
         );
     }
 
@@ -33,12 +33,12 @@ class TravelPortTwigHelper extends \Twig_Extension {
      * @return int
      */
     public function getTheme () {
-        return $this->container->getParameter('oni_travel_connect.theme');
+        return $this->container->getParameter('oni_travel_port.theme');
     }
 
     public function getThemeAssetPath(){
 
-        $theme = $this->container->getParameter('oni_travel_connect.theme');
+        $theme = $this->container->getParameter('oni_travel_port.theme');
 
         $path = '/themes/travel-connect/'.$theme.'/';
 
@@ -50,7 +50,7 @@ class TravelPortTwigHelper extends \Twig_Extension {
      * {@inheritdoc}
      */
     public function getName() {
-        return 'travel_connect_service';
+        return 'travel_port_service';
     }
 
 }

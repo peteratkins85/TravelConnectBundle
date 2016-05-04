@@ -52,12 +52,12 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
 
         if (isset($config['theme'])) {
             //Set design theme by config
-            $container->setParameter('oni_travel_connect.theme', isset($config['theme']) ? $config['theme'] : 'default');
+            $container->setParameter('oni_travel_port.theme', isset($config['theme']) ? $config['theme'] : 'default');
         }
 
-        if (isset($config['travel_connect_url'])){
+        if (isset($config['travel_port_url'])){
             //Set default url param
-            $container->setParameter('oni_travel_connect.default_url', isset($config['travel_connect_url']) ? $config['travel_connect_url'] : 'tc');
+            $container->setParameter('oni_travel_port.default_url', isset($config['travel_port_url']) ? $config['travel_port_url'] : 'tc');
         }
 
 
@@ -106,7 +106,7 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
                     $appRootPath = $container->getParameter('kernel.root_dir');
                     $config = array(
                       'paths' => array(
-                        $appRootPath.'/../themes/travel-connect'=> 'travel_connect'
+                        $appRootPath.'/../themes/travel-connect'=> 'travel_port'
                       )
                     );
                     $container->prependExtensionConfig($name, $config);

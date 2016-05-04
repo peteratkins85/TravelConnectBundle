@@ -1,65 +1,65 @@
 
-oni_travel_connect_index:
+oni_travel_port_index:
     path:     /admin/travel-connect/users
-    defaults: { _controller: oni_travel_connect_user_controller:indexAction }
+    defaults: { _controller: oni_travel_port_user_controller:indexAction }
 
-oni_travel_connect_add:
+oni_travel_port_add:
     path:     /admin/travel-connect/user/add
-    defaults: { _controller: oni_travel_connect_user_controller:addAction }
+    defaults: { _controller: oni_travel_port_user_controller:addAction }
 
-oni_travel_connect_edit:
+oni_travel_port_edit:
     path:     /admin/travel-connect/user/edit/{id}
-    defaults: { _controller: oni_travel_connect_user_controller:editAction }
+    defaults: { _controller: oni_travel_port_user_controller:editAction }
 
 #Front End Routes
 
-oni_travel_connect_login:
+oni_travel_port_login:
     path: /login
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_auth_controller:loginAction
+        _controller: oni_travel_port_auth_controller:loginAction
         domain: '%domain%'
     requirements:
         domain: '%domain%'
-oni_travel_connect_home:
+oni_travel_port_home:
     path: /
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_index_controller:indexAction
+        _controller: oni_travel_port_index_controller:indexAction
         domain: '%domain%'
     requirements:
         domain: '%domain%'
-oni_travel_connect_check:
+oni_travel_port_check:
     path:      /login_check
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_auth_controller:loginCheck
+        _controller: oni_travel_port_auth_controller:loginCheck
         domain: '%domain%'
     requirements:
         domain: '%domain%'
-oni_travel_connect_logout:
+oni_travel_port_logout:
     path:      /logout
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_auth_controller:logout
+        _controller: oni_travel_port_auth_controller:logout
         domain: '%domain%'
     requirements:
         domain: '%domain%'
 
-oni_travel_connect_hotel_search:
+oni_travel_port_hotel_search:
     path:      /hotel-search
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_hotel_search_controller:indexAction
+        _controller: oni_travel_port_hotel_search_controller:indexAction
         domain: '%domain%'
     requirements:
         domain: '%domain%'
 
-oni_travel_connect_account:
+oni_travel_port_account:
     path:      /account
     host:     "tc.{domain}"
     defaults:
-        _controller: oni_travel_connect_account_controller:indexAction
+        _controller: oni_travel_port_account_controller:indexAction
         domain: '%domain%'
     requirements:
         domain: '%domain%'

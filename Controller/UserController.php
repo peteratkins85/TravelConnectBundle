@@ -26,7 +26,7 @@ class UserController extends CoreController
     public function addAction()
     {
 
-        $TcUser = $this->get('oni_travel_connect_user');
+        $TcUser = $this->get('oni_travel_port_user');
 
 
         return $this->render('TravelPortBundle:User:add.html.twig', array(

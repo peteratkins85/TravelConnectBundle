@@ -25,12 +25,12 @@ class TravelPortCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->has('oni_travel_connect_provider_container')) {
+        if (!$container->has('oni_travel_port_provider_container')) {
             return;
         }
 
         $definition = $container->findDefinition(
-          'oni_travel_connect_provider_container'
+          'oni_travel_port_provider_container'
         );
 
         $taggedServices = $container->findTaggedServiceIds(

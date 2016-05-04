@@ -30,7 +30,7 @@ class WtsProvider implements HotelProviderInterface, ProviderInterface
     {
 
         $this->container = $container;
-        $this->apiClient = $this->container->get('oni_travel_connect_provider_client.wts');
+        $this->apiClient = $this->container->get('oni_travel_port_provider_client.wts');
 
     }
 
@@ -58,15 +58,15 @@ class WtsProvider implements HotelProviderInterface, ProviderInterface
         }
 
         $container->setParameter(
-          'oni_travel_connect.wts.username',
+          'oni_travel_port.wts.username',
           $providerConf['username']
         );
         $container->setParameter(
-          'oni_travel_connect.wts.password',
+          'oni_travel_port.wts.password',
           $providerConf['password']
         );
 
-        $clientId = 'oni_travel_connect_provider_client.wts';
+        $clientId = 'oni_travel_port_provider_client.wts';
 
         //Check if service for API client exists
         if ($container->has($clientId)) {

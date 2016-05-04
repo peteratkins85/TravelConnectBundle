@@ -8,7 +8,7 @@ class AccountController extends CoreController
 {
     public function indexAction()
     {
-        return $this->render('@travel_connect/'.$this->travelPortTheme.'/account.html.twig', array(
+        return $this->render('@travel_port/'.$this->travelPortTheme.'/account.html.twig', array(
         ));
     }
 }

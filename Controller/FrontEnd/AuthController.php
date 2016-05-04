@@ -39,7 +39,7 @@ class AuthController extends CoreController
 
         echo $error;
 
-        return $this->render('@travel_connect/'.$this->travelPortTheme.'/login.html.twig', array(
+        return $this->render('@travel_port/'.$this->travelPortTheme.'/login.html.twig', array(
           'last_username' => $lastUsername,
           'error' => $error,
           'csrf_token' => $csrfToken,

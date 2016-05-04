@@ -34,7 +34,7 @@ class ThemeListener implements EventSubscriberInterface
     public function addTwigGlobals(){
 
         //Add avaialble language to twig template as a global variable
-        $this->container->get('twig')->addGlobal('travel_connect_theme', $this->container->getParameter('oni_travel_connect.theme'));
+        $this->container->get('twig')->addGlobal('travel_port_theme', $this->container->getParameter('oni_travel_port.theme'));
 
     }
 

@@ -20,7 +20,7 @@ class Configuration implements ConfigurationInterface
   public function getConfigTreeBuilder()
   {
     $treeBuilder = new TreeBuilder();
-    $rootNode = $treeBuilder->root('travel_connect');
+    $rootNode = $treeBuilder->root('travel_port');
 
         $rootNode
             //->append($this->getWTSProviderNode('wts'))
@@ -28,7 +28,7 @@ class Configuration implements ConfigurationInterface
 
             ->children()
             ->scalarNode('theme')->cannotBeEmpty()->defaultValue('default')->end()
-            ->scalarNode('travel_connect_url')->cannotBeEmpty()->defaultValue('tc')->end()
+            ->scalarNode('travel_port_url')->cannotBeEmpty()->defaultValue('tc')->end()
               ->arrayNode('providers')
               ->addDefaultsIfNotSet()
               ->canBeUnset()

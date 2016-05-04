@@ -12,9 +12,9 @@ class HotelSearchController extends CoreController
     {
 
         $this->denyAccessUnlessGranted('ROLE_TRAVEL_CONNECT_USER', null, 'Unable to access this page!');
-        $this->get('oni_travel_connect_provider.wts')->searchHote();
+        $this->get('oni_travel_port_provider.wts')->searchHote();
 
-        return $this->render('@travel_connect/'.$this->travelPortTheme.'/hotel_search.html.twig', array(
+        return $this->render('@travel_port/'.$this->travelPortTheme.'/hotel_search.html.twig', array(
         ));
 
     }
