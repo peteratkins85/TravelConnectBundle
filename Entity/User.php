@@ -2,19 +2,22 @@
 
 namespace Oni\TravelPortBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\Role\Role;
-use Symfony\Component\Security\Core\User\AdvancedUserInterface;
 use Oni\TravelPortBundle\Entity\UserInterface;
 
 /**
  * User
  *
- * @ORM\Table(name="oni_tc_users")
- * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Entity\Repository\UsersRepository")
+ * @ORM\Table(name="oni_tp_users")
+ * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Entity\Repository\UserRepository")
  */
-class User implements AdvancedUserInterface, UserInterface
+class User implements UserInterface
 {
+
+    const ROLE_DEFAULT = 'ROLE_USER';
+
     /**
      * @var int
      *
@@ -155,13 +158,13 @@ class User implements AdvancedUserInterface, UserInterface
     private $modifiedBy;
 
     /**
-     * @var Collection
-     *
-     * @ORM\OneToOne(targetEntity="Oni\TravelPortBundle\Entity\UserGroups")
-     * @ORM\JoinColumn(name="groupId" , referencedColumnName="id")
-     *
+     * @ORM\ManyToMany(targetEntity="Oni\TravelPortBundle\Entity\Group")
+     * @ORM\JoinTable(name="oni_user_tp_r_group",
+     *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     * )
      */
-    protected $group;
+    protected $groups;
 
 
     /**
@@ -260,10 +263,12 @@ class User implements AdvancedUserInterface, UserInterface
      * @return Role[] The user roles
      */
     public function getRoles() {
+        
+        foreach ($this->groups as $group){
 
-        $roles = $this->roles;
-        $groles = $this->group->getRoles();
-        $roles = array_merge($roles, $this->group->getRoles());
+            $roles = array_merge($this->roles, $group->getRoles());
+
+        }
 
         // we need to make sure to have at least one role
         $roles[] = static::ROLE_DEFAULT;
@@ -316,9 +321,6 @@ class User implements AdvancedUserInterface, UserInterface
         $this->plainPassword = null;
     }
 
-    public function getCompnayAccount() {
-        // TODO: Implement getCompnayAccount() method.
-    }
 
     /**
      * Set username
@@ -575,7 +577,7 @@ class User implements AdvancedUserInterface, UserInterface
      *
      * @return User
      */
-    public function setLastLogin($lastLogin)
+    public function setLastLogin(\DateTime $lastLogin = null)
     {
         $this->lastLogin = $lastLogin;
 
@@ -691,26 +693,123 @@ class User implements AdvancedUserInterface, UserInterface
 
 
     /**
-     * Set group
+     * Gets the groups granted to the user.
      *
-     * @param \Oni\TravelPortBundle\Entity\UserGroups $group
-     *
-     * @return User
+     * @return Collection
      */
-    public function setGroup(\Oni\TravelPortBundle\Entity\UserGroups $group = null)
+    public function getGroups()
     {
-        $this->group = $group;
+        return $this->groups ?: $this->groups = new ArrayCollection();
+    }
+
+
+    public function addGroup(Group $group)
+    {
+        if (!$this->getGroups()->contains($group)) {
+            $this->getGroups()->add($group);
+        }
 
         return $this;
     }
 
-    /**
-     * Get group
-     *
-     * @return \Oni\TravelPortBundle\Entity\UserGroups
-     */
-    public function getGroup()
+    public function removeGroup(GroupInterface $group)
     {
-        return $this->group;
+        if ($this->getGroups()->contains($group)) {
+            $this->getGroups()->removeElement($group);
+        }
+
+        return $this;
     }
-}
+
+    public function unserialize($serialized){
+
+        $data = unserialize($serialized);
+        // add a few extra elements in the array to ensure that we have enough keys when unserializing
+        // older data which does not include all properties.
+        //$data = array_merge($data, array_fill(0, 2, null));
+
+        list(
+            $this->password,
+            $this->salt,
+            $this->username,
+            $this->email
+            ) = $data;
+
+    }
+
+    public function serialize(){
+
+        return serialize(array(
+            $this->password,
+            $this->salt,
+            $this->username,
+            $this->email
+        ));
+
+    }
+
+    public function getAgency() {
+        // TODO: Implement getAgency() method.
+    }
+
+    /**
+     * Tells if the the given user has the super admin role.
+     *
+     * @return boolean
+     */
+    public function isSuperAdmin() {
+        // TODO: Implement isSuperAdmin() method.
+    }
+
+    /**
+     * Sets the locking status of the user.
+     *
+     * @param boolean $boolean
+     *
+     * @return self
+     */
+    public function setLocked( $boolean ) {
+        $this->locked = $boolean;
+    }
+
+    /**
+     * Gets the confirmation token.
+     *
+     * @return string
+     */
+    public function getConfirmationToken() {
+        // TODO: Implement getConfirmationToken() method.
+    }
+
+    /**
+     * Sets the confirmation token
+     *
+     * @param string $confirmationToken
+     *
+     * @return self
+     */
+    public function setConfirmationToken( $confirmationToken ) {
+        // TODO: Implement setConfirmationToken() method.
+    }
+
+    /**
+     * Sets the timestamp that the user requested a password reset.
+     *
+     * @param null|\DateTime $date
+     *
+     * @return self
+     */
+    public function setPasswordRequestedAt( \DateTime $date = null ) {
+        // TODO: Implement setPasswordRequestedAt() method.
+    }
+
+    /**
+     * Checks whether the password reset request has expired.
+     *
+     * @param integer $ttl Requests older than this many seconds will be considered expired
+     *
+     * @return boolean true if the user's password request is non expired, false otherwise
+     */
+    public function isPasswordRequestNonExpired( $ttl ) {
+        // TODO: Implement isPasswordRequestNonExpired() method.
+}}

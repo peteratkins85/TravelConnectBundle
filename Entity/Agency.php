@@ -5,12 +5,12 @@ namespace Oni\TravelPortBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Companies
+ * Agency
  *
- * @ORM\Table(name="companies")
+ * @ORM\Table(name="agencies")
  * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Repository\CompaniesRepository")
  */
-class Companies
+class Agency
 {
     /**
      * @var int

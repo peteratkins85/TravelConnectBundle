@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelPortBundle\Providers;
+namespace Oni\TravelPortBundle\Providers\Wts;
 
 use Oni\TravelPortBundle\ProviderSupport\ProviderInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -14,6 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * http://www.wts-travel.com/
  *
  * @package Oni\TravelPortBundle\Providers
+ * @author Peter Atkins <peter.atkins85@gmail.com>
+ *
  *
  */
 class WtsProvider implements HotelProviderInterface, ProviderInterface
@@ -36,8 +38,12 @@ class WtsProvider implements HotelProviderInterface, ProviderInterface
 
     public function searchHotel($search = array())
     {
+        $stringRequest = '?action=hotel_search&username=thuraya&password=travel123&checkin_date=14/05/2016&checkout_date=22/05/2016&sel_currency=EUR&sel_country=68&sel_city=LONDON&chk_ratings=["3.0","4.0","5.0"]&sel_nationality=1&availableonly=1&number_of_rooms=2&roomDetails=[{"numberOfAdults":"1","numberOfChild":"0","ChildAge":"0"}]&gzip=no';
+        $outputArray = [];
+        parse_str($stringRequest, $outputArray);
+        $results = $this->apiClient->searchHotel($outputArray);
 
-
+        $results = $results;
     }
 
     /**

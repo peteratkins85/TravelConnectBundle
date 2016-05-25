@@ -3,9 +3,11 @@
 namespace Oni\TravelPortBundle\Security;
 
 
-use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
+
+use Oni\TravelPortBundle\Entity\UserInterface;
+use Symfony\Component\Security\Core\User\UserInterface as CoreUserInterface;
+use Oni\UserManagerBundle\Service\UserServiceInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Oni\TravelPortBundle\Entity\User;
@@ -14,13 +16,15 @@ use Oni\TravelPortBundle\Entity\User;
 class UserProvider implements UserProviderInterface
 {
 
-    protected $userRepository;
-    protected $doctrine;
+    /**
+     * @var \Oni\UserManagerBundle\Service\UserServiceInterface
+     */
+    protected $userService;
 
-    public function __construct(UsersRepository $userRepository, $doctrine){
 
-        $this->userRepository = $userRepository;
-        $this->doctrine = $doctrine;
+    public function __construct(UserServiceInterface $userService){
+
+        $this->userService = $userService;
 
     }
 
@@ -29,15 +33,15 @@ class UserProvider implements UserProviderInterface
 
         if ($username) {
 
-            $user = $this->userRepository->findByUsername($username)[0];
+            $user = $this->userService->findByUsername($username);
 
         }
 
-        if (!$user instanceof User || empty($user)) {
+        if (!$user instanceof UserInterface || empty($user)) {
             throw new UsernameNotFoundException(
                 sprintf('Username "%s" does not exist.', $username)
             );
-        }else {
+        } else {
 
             return $user;
 
@@ -45,19 +49,26 @@ class UserProvider implements UserProviderInterface
 
     }
 
-    public function refreshUser(UserInterface $user)
+    public function refreshUser(CoreUserInterface $user)
     {
-        if (!$user instanceof User) {
-            throw new UnsupportedUserException(
-                sprintf('Instances of "%s" are not supported.', get_class($user))
-            );
+        if (!$user instanceof UserInterface) {
+            throw new UnsupportedUserException(sprintf('Expected an instance of Oni\UserManagerBundle\Entity\UserInterface , but got "%s".', get_class($user)));
         }
 
-        return $this->loadUserByUsername($user->getUsername());
+        if (!$this->supportsClass(get_class($user))) {
+            throw new UnsupportedUserException(sprintf('Expected an instance of %s, but got "%s".', $this->userService->getEntityClass(), get_class($user)));
+        }
+
+        if (null === $reloadedUser = $this->loadUserByUsername($user->getUsername())) {
+            throw new UsernameNotFoundException(sprintf('User with ID "%s" could not be reloaded.', $user->getId()));
+        }
+
+        return $reloadedUser;
     }
+
 
     public function supportsClass($class)
     {
-        return $class === 'Oni\TravelPortBundle\Entity\Users';
+        return $class === $this->userService->getEntityClass();
     }
 }

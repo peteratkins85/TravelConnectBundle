@@ -40,7 +40,7 @@ class TravelPortTwigHelper extends \Twig_Extension {
 
         $theme = $this->container->getParameter('oni_travel_port.theme');
 
-        $path = '/themes/travel-connect/'.$theme.'/';
+        $path = '/oni-themes/travel_port/'.$theme.'/';
 
         return $path;
 

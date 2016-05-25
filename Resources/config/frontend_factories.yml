@@ -1,0 +1,12 @@
+services:
+    #Controllers
+    oni_hotel_search_controller_factory:
+        class: Oni\TravelPortBundle\Factory\Controller\Front\HotelSearchControllerFactory
+    #Forms
+    oni_travel_port_hotel_search_factory:
+        class: Oni\TravelPortBundle\Factory\Form\Front\HotelSearchFormFactory
+    #Repositories
+
+    #Services
+
+

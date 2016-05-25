@@ -19,40 +19,36 @@ class Configuration implements ConfigurationInterface
    */
   public function getConfigTreeBuilder()
   {
+
     $treeBuilder = new TreeBuilder();
     $rootNode = $treeBuilder->root('travel_port');
 
-        $rootNode
-            //->append($this->getWTSProviderNode('wts'))
-            ->append($this->getClassNode())
-
-            ->children()
-            ->scalarNode('theme')->cannotBeEmpty()->defaultValue('default')->end()
-            ->scalarNode('travel_port_url')->cannotBeEmpty()->defaultValue('tc')->end()
-              ->arrayNode('providers')
-              ->addDefaultsIfNotSet()
-              ->canBeUnset()
-                ->children()
-                  ->arrayNode('wts')
-                    ->children()
-                      ->scalarNode('username')->cannotBeEmpty()->end()
-                      ->scalarNode('password')->cannotBeEmpty()->end()
-                    ->end()
-                  ->end()
-                ->end()
-              ->end()
-            ->end()
-        ;
+    //        $rootNode
+    //            //->append($this->getWTSProviderNode('wts'))
+    //            ->append($this->getClassNode())
+    //
+    //            ->children()
+    //            ->scalarNode('theme')->cannotBeEmpty()->defaultValue('default')->end()
+    //            ->scalarNode('travel_port_url')->cannotBeEmpty()->defaultValue('tc')->end()
+    //              ->arrayNode('providers')
+    //              ->addDefaultsIfNotSet()
+    //              ->canBeUnset()
+    //                ->children()
+    //                  ->arrayNode('wts')
+    //                    ->children()
+    //                      ->scalarNode('username')->cannotBeEmpty()->end()
+    //                      ->scalarNode('password')->cannotBeEmpty()->end()
+    //                    ->end()
+    //                  ->end()
+    //                ->end()
+    //              ->end()
+    //            ->end()
+    //        ;
 
     return $treeBuilder;
 
   }
 
-  public function getContainerExtension(){
-
-
-
-  }
 
   /**
    * @param string $name

@@ -8,12 +8,11 @@
 
 namespace Oni\TravelPortBundle\Entity;
 
+use Oni\UserManagerBundle\Entity\UserInterface as BaseUserInterface;
 
-interface UserInterface {
+interface UserInterface extends BaseUserInterface{
 
-    const ROLE_DEFAULT = 'TRAVEL_CONNECT_USER';
-
-    public function getCompnayAccount();
+    public function getAgency();
 
 
 }

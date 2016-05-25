@@ -1,0 +1,11 @@
+services:
+    oni_travel_port_provider_container:
+        class: Oni\TravelPortBundle\Providers\TravelPortProviderContainer
+    oni_travel_port_provider.wts:
+        class: Oni\TravelPortBundle\Providers\Wts\WtsProvider
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: oni_travel_port.provider }
+    oni_travel_port_provider_client.wts:
+        class: Oni\TravelPortBundle\ProviderClients\WtsApiClient

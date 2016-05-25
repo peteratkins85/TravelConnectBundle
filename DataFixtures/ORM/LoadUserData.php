@@ -6,19 +6,18 @@
  * Time: 19:42
  */
 
-namespace Oni\ProductManagerBundle\DataFixtures\ORM;
+namespace Oni\TravelPortBundle\DataFixtures\ORM;
 
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
+use Oni\TravelPortBundle\Entity\Group;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Doctrine\Common\DataFixtures\AbstractFixture;
 use Oni\TravelPortBundle\Entity\User;
-use Oni\TravelPortBundle\Entity\UserGroups;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
-use Symfony\Component\Validator\Constraints\DateTime;
 
-class LoadTcUserData extends AbstractFixture implements OrderedFixtureInterface ,FixtureInterface, ContainerAwareInterface
+class LoadUserData extends AbstractFixture implements OrderedFixtureInterface ,FixtureInterface, ContainerAwareInterface
 {
 
 
@@ -36,23 +35,32 @@ class LoadTcUserData extends AbstractFixture implements OrderedFixtureInterface 
     public function load(ObjectManager $manager)
     {
 
-        $userGroup1 = new UserGroups();
-        $userGroup1->setGroupName('Standard User');
-        $userGroup1->setRoles(array('TRAVEL_CONNECT_USER'));
+        $userGroup1 = new Group();
+        $userGroup1->setName('Guest User');
+        $userGroup1->setAccessLevel(1);
+        $userGroup1->setRoles(array('ROLE_GUEST'));
 
-        $userGroup2 = new UserGroups();
-        $userGroup2->setGroupName('Admin');
-        $userGroup2->setRoles(array('TRAVEL_CONNECT_ADMIN','TRAVEL_CONNECT_USER'));
+        $userGroup2 = new Group();
+        $userGroup2->setName('Standard User');
+        $userGroup2->setAccessLevel(2);
+        $userGroup2->setRoles(array('ROLE_USER'));
 
-        $userGroup3 = new UserGroups();
-        $userGroup3->setGroupName('Super Admin');
-        $userGroup3->setRoles(array('TRAVEL_CONNECT_ADMIN','ROLE_ALLOWED_TO_SWITCH'));
+        $userGroup3 = new Group();
+        $userGroup3->setName('Admin');
+        $userGroup3->setAccessLevel(4);
+        $userGroup3->setRoles(array('ROLE_ADMIN'));
 
+        $userGroup4 = new Group();
+        $userGroup4->setName('Super Admin');
+        $userGroup4->setAccessLevel(5);
+        $userGroup4->setRoles(array('ROLE_SUPER_ADMIN'));
+        
         $em = $this->container->get('doctrine.orm.default_entity_manager');
 
         $em->persist($userGroup1);
         $em->persist($userGroup2);
         $em->persist($userGroup3);
+        $em->persist($userGroup4);
         $em->flush();
 
         $startDate = time();
@@ -68,11 +76,9 @@ class LoadTcUserData extends AbstractFixture implements OrderedFixtureInterface 
         $user->setPassword($password);
         $user->setUsername('admin');
         $user->setPlainPassword('admin');
+        $user->addGroup($userGroup4);
         $user->setExpiresAt(new \DateTime('+ 2 years'));
-        $user->setRoles(array('ROLE_TRAVEL_CONNECT_SUPER_ADMIN'));
         $user->setEnabled(1);
-        $user->setGroup($userGroup3);
-
 
 
         $em->persist($user);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Oni\TravelPortBundle\Controller\FrontEnd;
+namespace Oni\TravelPortBundle\Controller\Front;
 
 use Oni\CoreBundle\Controller\CoreController;
 use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
@@ -37,7 +37,6 @@ class AuthController extends CoreController
             $csrfToken = $this->get('security.csrf.token_manager')->getToken('authenticate')->getValue();
         }
 
-        echo $error;
 
         return $this->render('@travel_port/'.$this->travelPortTheme.'/login.html.twig', array(
           'last_username' => $lastUsername,

@@ -37,30 +37,41 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
         $loader->load('frontend_services.yml');
+        $loader->load('frontend_factories.yml');
+        $loader->load('provider_services.yml');
+        $loader->load('factories.yml');
 
+        
+        if ($container->hasParameter('oni_travel_port')) {
 
-        /**
-         *
-         * Prepare Providers
-         *
-         */
-        foreach ($config['providers'] as $providerName => $providerConf){
+            $params = $container->getParameter('oni_travel_port');
+            /**
+             *
+             * Prepare Providers
+             *
+             */
+            if (!empty($params['providers'])) {
 
-            $this->prepareProvider($providerName, $providerConf);
+                foreach ( $params['providers'] as $providerName => $providerConf ) {
+
+                    $this->prepareProvider( $providerName, $providerConf );
+
+                }
+            }
+
+            if (!empty($params['theme'])) {
+                //Set design theme by config
+                $container->setParameter( 'oni_travel_port.theme',
+                    isset( $params['theme'] ) ? $params['theme'] : 'default' );
+            }
+
+            if ( isset( $params['travel_port_url'] ) ) {
+                //Set default url param
+                $container->setParameter( 'oni_travel_port.default_url',
+                    isset( $params['travel_port_url'] ) ? $params['travel_port_url'] : 'tc' );
+            }
 
         }
-
-        if (isset($config['theme'])) {
-            //Set design theme by config
-            $container->setParameter('oni_travel_port.theme', isset($config['theme']) ? $config['theme'] : 'default');
-        }
-
-        if (isset($config['travel_port_url'])){
-            //Set default url param
-            $container->setParameter('oni_travel_port.default_url', isset($config['travel_port_url']) ? $config['travel_port_url'] : 'tc');
-        }
-
-
 
     }
 
@@ -75,7 +86,7 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
     public function prepareProvider($providerName, $providerConf){
 
         //Set provider class and call function
-        $providerClass  = (string)$this->providerNameSpace.ucwords($providerName).$this->providerPostFix;
+        $providerClass  = (string)$this->providerNameSpace.ucwords($providerName).'\\'.ucwords($providerName).$this->providerPostFix;
 
         if (!class_exists($providerClass))
             throw new \Exception('Travel Service provider class '.$providerClass.' does not exist');
@@ -106,7 +117,7 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
                     $appRootPath = $container->getParameter('kernel.root_dir');
                     $config = array(
                       'paths' => array(
-                        $appRootPath.'/../themes/travel-connect'=> 'travel_port'
+                        $appRootPath.'/../oni-themes/travel_port'=> 'travel_port'
                       )
                     );
                     $container->prependExtensionConfig($name, $config);

@@ -1,0 +1,11 @@
+services:
+    #Controllers
+
+    #Forms
+
+    #Repositories
+
+    #Services
+    oni_travel_port_user_service_factory:
+        class: Oni\TravelPortBundle\Factory\Service\UserServiceFactory
+

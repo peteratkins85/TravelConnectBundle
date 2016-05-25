@@ -1,6 +1,11 @@
 services:
     oni_travel_port_user:
         class: Oni\TravelPortBundle\Entity\User
+    oni_travel_port_user_service:
+        class: Oni\TravelPortBundle\Services\UserService
+        factory: [ '@oni_travel_port_user_service_factory', getService]
+        arguments:
+            - '@service_container'
     oni_travel_port_user_groups:
         class: Oni\TravelPortBundle\Entity\UserGroups
     oni_travel_port_user_repository:
@@ -16,7 +21,7 @@ services:
             - { name: twig.extension }
     oni_travel_port_user_provider:
         class: Oni\TravelPortBundle\Security\UserProvider
-        arguments: ["@oni_travel_port_user_repository" , "@doctrine.orm.entity_manager"]
+        arguments: ["@oni_travel_port_user_service"]
     oni_travel_port_user_controller_class:
         class: Oni\TravelPortBundle\Controller\UserController
         arguments:
@@ -26,22 +31,7 @@ services:
         factory: [ '@oni_controller_factory',  getController]
         arguments:
                 - '@oni_travel_port_user_controller_class'
-    oni_travel_port_user.service:
-        class: Oni\TravelPortBundle\Services\TravelPortUserService
-        arguments:
-                - '@oni_travel_port_user_repository'
-    oni_travel_port_provider_container:
-        class: Oni\TravelPortBundle\Providers\TravelPortProviderContainer
-    #Providers
-    oni_travel_port_provider.wts:
-        class: Oni\TravelPortBundle\Providers\WtsProvider
-        arguments:
-            - '@service_container'
-        tags:
-            - { name: oni_travel_port.provider }
-    oni_travel_port_provider_client.wts:
-        class: Oni\TravelPortBundle\ProviderClients\WtsApiClient
-        tags:
-            - { name: guzzle.client }
+
+
 
 

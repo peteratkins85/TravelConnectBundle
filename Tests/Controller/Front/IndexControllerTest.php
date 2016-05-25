@@ -2,7 +2,7 @@
 
 namespace Oni\TravelPortBundle\Tests\Controller;
 
-use Oni\TravelPortBundle\Tests\Controller\FrontEnd\TcTestCase;
+use Oni\TravelPortBundle\Tests\Controller\Front\TcTestCase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class IndexControllerTest extends WebTestCase

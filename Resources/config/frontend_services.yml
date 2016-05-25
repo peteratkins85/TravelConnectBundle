@@ -1,11 +1,12 @@
 parameters:
-    oni_travel_port_auth_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\AuthController
-    oni_travel_port_hotel_search_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\HotelSearchController
-    oni_travel_port_index_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\IndexController
-    oni_travel_port_account_controller_class: Oni\TravelPortBundle\Controller\FrontEnd\AccountController
+    oni_travel_port_auth_controller_class: Oni\TravelPortBundle\Controller\Front\AuthController
+    oni_travel_port_hotel_search_controller_class: Oni\TravelPortBundle\Controller\Front\HotelSearchController
+    oni_travel_port_index_controller_class: Oni\TravelPortBundle\Controller\Front\IndexController
+    oni_travel_port_account_controller_class: Oni\TravelPortBundle\Controller\Front\AccountController
 
 
 services:
+    #Controllers
     oni_travel_port_auth_controller_class:
         class: '%oni_travel_port_auth_controller_class%'
     oni_travel_port_auth_controller:
@@ -20,13 +21,11 @@ services:
             factory: [ '@oni_controller_factory',  getController]
             arguments:
                     - '@oni_travel_port_index_controller_class'
-    oni_travel_port_hotel_search_controller_class:
-            class: "%oni_travel_port_hotel_search_controller_class%"
     oni_travel_port_hotel_search_controller:
-        class: "%oni_travel_port_hotel_search_controller_class%"
-        factory: [ '@oni_controller_factory',  getController]
+        class: Oni\TravelPortBundle\Controller\Front\HotelSearchController
+        factory: [ '@oni_hotel_search_controller_factory',  getController ]
         arguments:
-                - '@oni_travel_port_hotel_search_controller_class'
+                - '@service_container'
     oni_travel_port_account_controller_class:
             class: "%oni_travel_port_account_controller_class%"
     oni_travel_port_account_controller:
@@ -34,3 +33,17 @@ services:
         factory: [ '@oni_controller_factory',  getController]
         arguments:
                 - '@oni_travel_port_account_controller_class'
+    oni_travel_port_account_controller:
+        class: "%oni_travel_port_account_controller_class%"
+        factory: [ '@oni_hotel_search_controller_factory',  getController ]
+        arguments:
+                - '@oni_travel_port_account_controller_class'
+    #Forms
+    oni_travel_port_hotel_search_form:
+        class: Oni\TravelPortBundle\Form\Front\HotelSearchForm
+        factory: [ '@oni_travel_port_hotel_search_factory', getService ]
+        arguments:
+            - '@service_container'
+        tags:
+            - { name: form.type, alias: oni_hotel_search }
+

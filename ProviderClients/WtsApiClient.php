@@ -8,12 +8,16 @@
 
 namespace Oni\TravelPortBundle\ProviderClients;
 
-use Guzzle\Service\Client;
-use Symfony\Component\Config\Definition\Exception\Exception;
-use Guzzle\Common\Collection;
-use Guzzle\Http\Message\RequestFactory;
+use Curl\Curl;
 
-class WtsApiClient extends Client
+/***
+ *
+ * Class WtsApiClient
+ * @package Oni\TravelPortBundle\ProviderClients
+ * @author Peter Atkins <peter.atkins85@gmail.com>
+ *
+ */
+class WtsApiClient
 {
 
     /** @var  string */
@@ -25,29 +29,14 @@ class WtsApiClient extends Client
     /** @var  array */
     protected $requestParams;
 
-    /** @var bool  */
-    protected $ssl = false;
+    protected $url = 'http://alpha.new.wts-travel.com/WSV1/index.php';
+
 
     public function __construct($params = array())
     {
 
         if (empty($params['username']) || empty($params['password']))
-            throw new Exception('Username must be set to user WTS Api client');
-
-        if (!extension_loaded('curl')) {
-            // @codeCoverageIgnoreStart
-            throw new RuntimeException('The PHP cURL extension must be installed to use Guzzle.');
-            // @codeCoverageIgnoreEnd
-        }
-        $config = new Collection();
-
-        $this->setConfig($config);
-        //$this->initSsl();
-        $this->setBaseUrl('http://alpha.new.wts-travel.com/');
-        $this->defaultHeaders = new Collection();
-        $this->setRequestFactory(RequestFactory::getInstance());
-        $this->userAgent = $this->getDefaultUserAgent();
-
+            throw new \InvalidArgumentException('Username must be set to user WTS Api client');
 
         $this->username = $params['username'];
         $this->password = $params['password'];
@@ -61,39 +50,37 @@ class WtsApiClient extends Client
      *
      * @param array $params
      *
+     * returns array
+     *
      */
     public function searchHotel($params = array())
     {
-        $roomDetail = json_encode(array(
-            'numberOfAdults' => 2,
-            'numberOfChild' => 0,
-            'ChildAge' => 0
-          )
-        );
+
+        $roomDetail = '['.json_encode(array(
+                'numberOfAdults' => '1',
+                'numberOfChild' => '0',
+                'ChildAge' => '0'
+            )
+        ).']';
 
         $requestParams = array(
             'action'            => 'hotel_search',
             'checkin_date'      => isset($params['checkin_date'])    ? $params['checkin_date']    : 1,
             'checkout_date'     => isset($params['checkout_date'])   ? $params['checkout_date']   : 1,
-            'sel_country'       => isset($params['sel_country'])     ? $params['sel_country']     : 1,
-            'sel_city'          => isset($params['sel_city'])        ? $params['sel_city']        : 1,
+            'sel_country'       => isset($params['sel_country'])     ? 67     : 1,
+            'sel_city'          => isset($params['sel_city'])        ? 'DUBAI'       : 1,
             'chk_ratings'       => isset($params['chk_ratings'])     ? $params['chk_ratings']     : 1,
             'sel_nationality'   => isset($params['sel_nationality']) ? $params['sel_nationality'] : 1,
             'sel_currency'      => isset($params['sel_currency'])    ? $params['sel_currency']    : 1,
             'availableonly'     => isset($params['availableonly'])   ? $params['availableonly']   : 0,
             'number_of_rooms'   => isset($params['number_of_rooms']) ? $params['number_of_rooms'] : 1,
-            'twin1'             => isset($params['twin1'])           ? $params['twin1']           : false,
-            'roomDetails'       => isset($params['roomDetails'])     ? $params['roomDetails']     : $roomDetail,
             'gzip'              => isset($params['gzip'])            ? $params['gzip']            : 0,
         );
 
         $this->requestParams = array_merge($this->requestParams, $requestParams);
+        return $this->sendRequest($this->url.'?'.urldecode(http_build_query($this->requestParams)).'&roomDetails='.$roomDetail);
 
-        $request = $this->get('http://alpha.new.wts-travel.com/WSV1/index.php?'.http_build_query($this->requestParams));
-
-        $response = $request->send()->json();
-
-        return $response;
+        return json_decode($response, true);
 
     }
     /***
@@ -109,6 +96,34 @@ class WtsApiClient extends Client
           'username' => $this->username,
           'password' => $this->password,
         );
+
+    }
+
+
+    public function sendRequest($url , $method = 'GET' , $data = []){
+
+        $curl = curl_init();
+        $response = [
+            'results' => '{}',
+            'error'   => false,
+        ];
+
+        curl_setopt($curl,CURLOPT_URL, $url);
+        curl_setopt($curl,CURLOPT_RETURNTRANSFER, true);
+
+        $response['results'] = curl_exec($curl);
+
+        if(!curl_errno($curl)){
+            $info = curl_getinfo($curl);
+            $response['total_time'] = $info['total_time'];
+            $response['info'] = $info['url'];
+        } else {
+            $response['error'] = curl_error($curl);
+        }
+
+       curl_close($curl);
+
+        return $response;
 
     }
 
