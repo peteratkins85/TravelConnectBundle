@@ -1,11 +1,6 @@
 services:
     oni_travel_port_user:
         class: Oni\TravelPortBundle\Entity\User
-    oni_travel_port_user_service:
-        class: Oni\TravelPortBundle\Services\UserService
-        factory: [ '@oni_travel_port_user_service_factory', getService]
-        arguments:
-            - '@service_container'
     oni_travel_port_user_groups:
         class: Oni\TravelPortBundle\Entity\UserGroups
     oni_travel_port_user_repository:
@@ -22,15 +17,16 @@ services:
     oni_travel_port_user_provider:
         class: Oni\TravelPortBundle\Security\UserProvider
         arguments: ["@oni_travel_port_user_service"]
-    oni_travel_port_user_controller_class:
-        class: Oni\TravelPortBundle\Controller\UserController
-        arguments:
-                - '@oni_travel_port_user_repository'
     oni_travel_port_user_controller:
         class: Oni\TravelPortBundle\Controller\UserController
-        factory: [ '@oni_controller_factory',  getController]
+        factory: [ '@oni_travel_port_user_controller_factory',  getService]
         arguments:
-                - '@oni_travel_port_user_controller_class'
+                - '@service_container'
+    oni_travel_port_user_service:
+        class: Oni\TravelPortBundle\Services\UserService
+        factory: [ '@oni_travel_port_user_service_factory', getService]
+        arguments:
+            - '@service_container'
 
 
 

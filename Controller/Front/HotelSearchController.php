@@ -8,6 +8,7 @@ use Oni\CoreBundle\Entity\City;
 use Oni\CoreBundle\Entity\Repository\CityRepository;
 use Oni\TravelPortBundle\Form\Front\HotelSearchForm;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 class HotelSearchController extends CoreController
 {
@@ -17,9 +18,15 @@ class HotelSearchController extends CoreController
      */
     protected $hotelSearchForm;
 
+    /**
+     * @var \Symfony\Component\HttpFoundation\Request
+     */
+    protected $request;
+
     public function __construct(HotelSearchForm $hotelSearchForm) {
 
         $this->hotelSearchForm = $hotelSearchForm;
+        $this->request = new Request();
 
     }
 
@@ -30,6 +37,22 @@ class HotelSearchController extends CoreController
 
         
         $hotelSearchForm = $this->createForm(HotelSearchForm::class);
+
+        if ($this->request->isMethod('POST')) {
+
+            $hotelSearchForm->handleRequest($this->request);
+
+            if ($hotelSearchForm->isSubmitted() && $hotelSearchForm->isValid()) {
+
+                $this->addFlash('notice',$this->translator->trans('product_bundle.product.category.deleted'));
+
+            }else{
+
+                $this->flashErrors($hotelSearchForm);
+
+            }
+
+        }
 
 
         return $this->render('@travel_port/'.$this->travelPortTheme.'/hotel_search.html.twig', array(

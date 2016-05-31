@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HotelSearchControllerFactory extends CoreAbstractFactory{
 
-	public function getController(ContainerInterface $serviceContainer){
+	public function getService(ContainerInterface $serviceContainer){
 
 		$this->setContainer($serviceContainer);
 		$hotelSearchForm = $serviceContainer->get('oni_travel_port_hotel_search_form');
