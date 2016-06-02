@@ -24,7 +24,4 @@ class IndexController extends CoreController
     }
 
 
-
-
-
 }

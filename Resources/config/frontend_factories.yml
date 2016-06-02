@@ -2,6 +2,12 @@ services:
     #Controllers
     oni_hotel_search_controller_factory:
         class: Oni\TravelPortBundle\Factory\Controller\Front\HotelSearchControllerFactory
+    oni_travel_port_auth_controller_factory:
+        class: Oni\TravelPortBundle\Factory\Controller\Front\AuthControllerFactory
+    oni_travel_port_index_controller_factory:
+        class: Oni\TravelPortBundle\Factory\Controller\Front\IndexControllerFactory
+    oni_travel_port_account_controller_factory:
+        class: Oni\TravelPortBundle\Factory\Controller\Front\AccountControllerFactory
     #Forms
     oni_travel_port_hotel_search_factory:
         class: Oni\TravelPortBundle\Factory\Form\Front\HotelSearchFormFactory

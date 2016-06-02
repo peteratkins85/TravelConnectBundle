@@ -8,6 +8,8 @@
 
 namespace Oni\CoreBundle\Factory;
 
+use Oni\TravelPortBundle\Controller\UserController;
+use Oni\TravelPortBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Oni\CoreBundle\Controller\CoreController;
@@ -22,15 +24,22 @@ class UserControllerFactory extends CoreAbstractFactory
      *
      * Return Controller Class
      *
-     * @param CoreController $controller
-     * @return CoreController
+     * @param ContainerInterface $serviceContainer
+     *
+     * @return UserController
      *
      */
-    public function getController(CoreController $controller){
+    public function getService(ContainerInterface $serviceContainer){
 
-        $returnController = $this->prepareController($controller);
+        $userRepository = $serviceContainer->get('doctrine.orm.default_entity_manager')->getRepository(User::class);
 
-        return $returnController;
+        $userController = new UserController(
+            $userRepository
+        );
+
+        $userController = $this->prepareController($userController);
+
+        return $userController;
 
     }
 

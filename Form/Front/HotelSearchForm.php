@@ -4,13 +4,16 @@ namespace Oni\TravelPortBundle\Form\Front;
 
 use Oni\CoreBundle\Entity\City;
 use Oni\CoreBundle\Entity\Country;
+use Oni\CoreBundle\Entity\Nationality;
 use Oni\CoreBundle\Service\CountryService;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -41,10 +44,33 @@ class HotelSearchForm  extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+
+        $cities = array();
+
         $builder
-            ->add('location', TextType::class , array(
-                'label' => 'Location',
-                'required' => true
+            ->add('country', ChoiceType::class , array(
+                'label' => 'Country',
+                'placeholder' => 'Select Country',
+                'choices' => $this->countryService->getCountries(),
+                'choice_label' => function($country, $key, $index) {
+                    /** @var $country  Country */
+                    return $country->getNiceName();
+                },
+            ))
+            ->add('city', EntityType::class , array(
+                'label' => 'City',
+                'class' => 'Oni\CoreBundle\Entity\City',
+                'placeholder' => 'Select City',
+                'choices' => $cities,
+                'empty_data'  => '__select country first__'
+            ))
+            ->add('nationality', ChoiceType::class , array(
+                'label' => 'Nationality',
+                'choices' => $this->countryService->getNationalities(),
+                'choice_label' => function($nationality, $key, $index) {
+                    /** @var $nationality  Nationality */
+                    return $nationality->getNationality();
+                },
             ))
             ->add('cityId', HiddenType::class , array(
                 'required' => true
@@ -76,32 +102,38 @@ class HotelSearchForm  extends AbstractType
                 ),
             ))
             ->add('nationality', ChoiceType::class , array(
-              'label' => 'Nationality',
-              'choices' => $this->countryService->getNationalities()
+                'label' => 'Nationality',
+                'choices' => $this->countryService->getNationalities(),
+                'choice_label' => function($nationality, $key, $index) {
+                    /** @var $nationality  Nationality */
+                    return $nationality->getNationality();
+                },
+
             ))
-            ->add('availableOnly', CheckboxType::class, array(
-              'label' => 'Available Only',
-              'required' => false
-            ))
+//            ->add('availableOnly', CheckboxType::class, array(
+//              'label' => 'Available Only',
+//              'required' => false
+//            ))
             ->add('rating', ChoiceType::class, array(
-              'label' =>  'Rating',
-              'choices' => array(
-                  '1 star' => 1,
-                  '2 star' => 2,
-                  '3 star' => 3,
-                  '4 star' => 4,
-                  '5 star' => 5
-              ),
-              'multiple' => true
+                'label' =>  'Rating',
+                'choices' => array(
+                    '1 star' => 1,
+                    '2 star' => 2,
+                    '3 star' => 3,
+                    '4 star' => 4,
+                    '5 star' => 5
+                ),
+                'multiple' => true
             ))
             ->add('currency', CurrencyType::class)
             ->add('roomType', ChoiceType::class, array(
+                'label' => 'Room Type',
                 'choices' => array(
                     'Single' => 0,
                     'Double' => 1,
                     'King'   => 3
                 ),
-
+                'multiple' => false
             ))
             ->add('numberOfRooms', ChoiceType::class , array(
               'label' => 'Rooms',
