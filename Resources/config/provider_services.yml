@@ -1,6 +1,9 @@
 services:
     oni_travel_port_provider_container:
-        class: Oni\TravelPortBundle\Providers\TravelPortProviderContainer
+        class: Oni\TravelPortBundle\Providers\ProviderContainer
+        arguments:
+            - '@service_container'
+            - '@session'
     oni_travel_port_provider.wts:
         class: Oni\TravelPortBundle\Providers\Wts\WtsProvider
         arguments:

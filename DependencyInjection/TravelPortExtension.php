@@ -2,6 +2,8 @@
 
 namespace Oni\TravelPortBundle\DependencyInjection;
 
+use Oni\TravelPortBundle\Providers\ProviderInitializerInterface;
+use Oni\TravelPortBundle\TravelPortGlobals;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
@@ -22,7 +24,7 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
 
     protected $providerNameSpace = '\\Oni\\TravelPortBundle\\Providers\\';
 
-    protected $providerPostFix = 'Provider';
+    protected $providerPostFix = 'Initializer';
 
     /**
      * {@inheritdoc}
@@ -40,11 +42,11 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
         $loader->load('frontend_factories.yml');
         $loader->load('provider_services.yml');
         $loader->load('factories.yml');
-
         
         if ($container->hasParameter('oni_travel_port')) {
 
             $params = $container->getParameter('oni_travel_port');
+            $container->setParameter(TravelPortGlobals::CURRENCY_PARAM_KEY, array());
             /**
              *
              * Prepare Providers
@@ -91,18 +93,17 @@ class TravelPortExtension extends Extension implements  PrependExtensionInterfac
         if (!class_exists($providerClass))
             throw new \Exception('Travel Service provider class '.$providerClass.' does not exist');
 
-        $providerCallFunction = $providerClass.'::prepare';
+        $providerClass = new $providerClass($this->container);
+
+        if (!$providerClass instanceof ProviderInitializerInterface){
+            throw new \Exception('Travel portal provider initializer class '.$providerClass.' must be an instance of '. "Oni\\TravelPortBundle\\Providers\\ProviderInitializerInterface");
+        }
 
       /**
        * Configure provider by provider class static function ::prepare()
        * passing the container and provider config
        */
-      call_user_func_array($providerCallFunction,
-        array(
-          $this->container,
-          $providerConf
-        )
-      );
+        $providerClass->init($providerConf);
 
     }
 

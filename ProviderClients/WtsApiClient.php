@@ -9,6 +9,8 @@
 namespace Oni\TravelPortBundle\ProviderClients;
 
 use Curl\Curl;
+use Predis\Client as PredisClient;
+use Symfony\Component\Config\Definition\Exception\Exception;
 
 /***
  *
@@ -31,12 +33,32 @@ class WtsApiClient
 
     protected $url = 'http://alpha.new.wts-travel.com/WSV1/index.php';
 
+    /**
+     * @var \Predis\Client
+     */
+    protected $redis;
+
 
     public function __construct($params = array())
     {
 
         if (empty($params['username']) || empty($params['password']))
             throw new \InvalidArgumentException('Username must be set to user WTS Api client');
+
+        try{
+
+            $this->redis = new PredisClient(
+                array(
+                "host" => "localhost",
+                "port" => 6379
+                )
+            );
+
+        }catch (Exception $e){
+
+            throw $e;
+
+        }
 
         $this->username = $params['username'];
         $this->password = $params['password'];
@@ -45,44 +67,153 @@ class WtsApiClient
     }
 
     /**
-     *
-     * Search hotel
-     *
      * @param array $params
      *
-     * returns array
-     *
+     * @return array
      */
     public function searchHotel($params = array())
     {
 
-        $roomDetail = '['.json_encode(array(
-                'numberOfAdults' => '1',
-                'numberOfChild' => '0',
-                'ChildAge' => '0'
-            )
-        ).']';
+        if (isset($params['roomDetails'])) {
+            $roomDetail = $params['roomDetails'];
+            unset($params['roomDetails']);
+        }
 
-        $requestParams = array(
-            'action'            => 'hotel_search',
-            'checkin_date'      => isset($params['checkin_date'])    ? $params['checkin_date']    : 1,
-            'checkout_date'     => isset($params['checkout_date'])   ? $params['checkout_date']   : 1,
-            'sel_country'       => isset($params['sel_country'])     ? 67     : 1,
-            'sel_city'          => isset($params['sel_city'])        ? 'DUBAI'       : 1,
-            'chk_ratings'       => isset($params['chk_ratings'])     ? $params['chk_ratings']     : 1,
-            'sel_nationality'   => isset($params['sel_nationality']) ? $params['sel_nationality'] : 1,
-            'sel_currency'      => isset($params['sel_currency'])    ? $params['sel_currency']    : 1,
-            'availableonly'     => isset($params['availableonly'])   ? $params['availableonly']   : 0,
-            'number_of_rooms'   => isset($params['number_of_rooms']) ? $params['number_of_rooms'] : 1,
-            'gzip'              => isset($params['gzip'])            ? $params['gzip']            : 0,
-        );
+
+        $requestParams = $params;
 
         $this->requestParams = array_merge($this->requestParams, $requestParams);
-        return $this->sendRequest($this->url.'?'.urldecode(http_build_query($this->requestParams)).'&roomDetails='.$roomDetail);
+        $url = $this->url.'?'.urldecode(http_build_query($this->requestParams)).'&roomDetails='.$roomDetail;
+        $response = $this->sendRequest($url);
 
-        return json_decode($response, true);
+        return $this->processResponseData($response);
 
     }
+
+    public function getCountries(){
+
+        $cacheKey = 'WTS-COUNTRIES';
+
+        if ($this->redis->exists($cacheKey)){
+
+            return $this->processCacheResult($cacheKey);
+
+        }else {
+
+            $requestParams = array(
+                'action' => 'get_country'
+            );
+            $this->requestParams = array_merge( $this->requestParams,
+                $requestParams );
+            $response = $this->sendRequest( $this->url . '?' . urldecode( http_build_query( $this->requestParams ) ) );
+
+            return $this->processResponseData( $response , $cacheKey);
+
+        }
+
+    }
+
+    public function getNationalities(){
+
+        $cacheKey = 'WTS-NATIONALITIES';
+
+        if ($this->redis->exists($cacheKey)){
+
+            return $this->processCacheResult($cacheKey);
+
+        }else {
+
+            $requestParams = array(
+                'action' => 'get_nationalities'
+            );
+            $this->requestParams = array_merge( $this->requestParams,
+                $requestParams );
+            $response = $this->sendRequest( $this->url . '?' . urldecode( http_build_query( $this->requestParams ) ) );
+
+            return $this->processResponseData( $response , $cacheKey);
+
+        }
+
+    }
+    
+    public function processCacheResult($cacheKey){
+
+        $result = $this->redis->get($cacheKey);
+
+        return $this->isJson($result) ? json_decode($result) : $result ;
+
+    }
+
+    public function getCities($wtsCountryCode){
+
+
+        $cacheKey = 'WTS-CITIES-'.$wtsCountryCode;
+
+        if ($this->redis->exists($cacheKey)){
+
+            return $this->processCacheResult($cacheKey);
+
+        }else {
+
+            $requestParams       = array(
+                'action' => 'getcity',
+                'country' => $wtsCountryCode
+            );
+            $this->requestParams = array_merge( $this->requestParams,
+                $requestParams );
+            $response            = $this->sendRequest( $this->url . '?' . urldecode( http_build_query( $this->requestParams ) ) );
+
+            return $this->processResponseData( $response , $cacheKey );
+
+        }
+
+    }
+
+
+    function isJson($string,$return_data = false) {
+        $data = json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE) ? ($return_data ? $data : TRUE) : FALSE;
+    }
+
+    /**
+     * @param $response
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function processResponseData($response, $cacheKey = false){
+
+        if (!empty($response['results']) && $this->isJson($response['results'])){
+
+            $results = $response['results'];
+
+            if ($this->isCacheEnabled() && !empty($cacheKey)){
+
+                $this->redis->set($cacheKey, $results);
+
+            }
+
+            return json_decode($results) ;
+
+        }elseif ($response['error']){
+
+            throw new \HttpResponseException('WTS API Error message : '.$response['error']);
+
+        }else{
+
+            throw new \Exception('Invalid response from WTS API');
+
+        }
+
+    }
+
+
+    public function isCacheEnabled(){
+
+        return $this->redis;
+
+    }
+
     /***
      *
      * Prepare for api call request
@@ -127,9 +258,24 @@ class WtsApiClient
 
     }
 
-    public function getHotelDetails()
+    public function getHotelDetails($params)
     {
 
+        if (!isset($params['hotelId']) || !isset($params['searchId'])) {
+            throw new \HttpRequestException('Wts Api method getHotelDetails parameters hotelId and searchId must be set');
+        }
+
+        $requestParams = [
+            'action'   => 'hotel_detail',
+            'hotel_id' => $params['hotelId'],
+            'unique_id'=> $params['searchId']
+        ];
+
+        $this->requestParams = array_merge($this->requestParams, $requestParams);
+        $url = $this->url.'?'.urldecode(http_build_query($this->requestParams));
+        $response = $this->sendRequest($url);
+
+        return $this->processResponseData($response);
 
     }
 

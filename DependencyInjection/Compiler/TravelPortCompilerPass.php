@@ -34,7 +34,7 @@ class TravelPortCompilerPass implements CompilerPassInterface
         );
 
         $taggedServices = $container->findTaggedServiceIds(
-          'oni_tavel_connect.provider'
+          'oni_travel_port.provider'
         );
 
         foreach ($taggedServices as $id => $tags) {

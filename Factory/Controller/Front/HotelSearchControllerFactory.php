@@ -19,9 +19,11 @@ class HotelSearchControllerFactory extends CoreAbstractFactory{
 
 		$this->setContainer($serviceContainer);
 		$hotelSearchForm = $serviceContainer->get('oni_travel_port_hotel_search_form');
+		$providerContainer = $serviceContainer->get('oni_travel_port_provider_container');
 
 		$hotelSearchController = new HotelSearchController(
-			$hotelSearchForm
+			$hotelSearchForm,
+			$providerContainer
 		);
 
 		$hotelSearchController = $this->injectControllerDependencies($hotelSearchController);

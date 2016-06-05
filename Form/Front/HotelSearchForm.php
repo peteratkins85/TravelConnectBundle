@@ -2,23 +2,20 @@
 
 namespace Oni\TravelPortBundle\Form\Front;
 
+
 use Oni\CoreBundle\Entity\City;
 use Oni\CoreBundle\Entity\Country;
+use Oni\CoreBundle\Entity\Currency;
 use Oni\CoreBundle\Entity\Nationality;
 use Oni\CoreBundle\Service\CountryService;
+use Oni\TravelPortBundle\Form\Front\Constraints\CheckOutCheckIn;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\CurrencyType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\HttpFoundation\Tests\Session\Storage\Proxy\ConcreteSessionHandlerInterfaceProxy;
-use Symfony\Component\HttpKernel\Fragment\HIncludeFragmentRenderer;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\GreaterThan;
@@ -30,11 +27,26 @@ class HotelSearchForm  extends AbstractType
     /**
      * @var \Oni\CoreBundle\Service\CountryService
      */
-    private $countryService;
+    protected $countryService;
 
-     public function __construct(CountryService $countryService){
+    /**
+     * @var array
+     */
+    protected $availableCurrencies;
 
+    /**
+     * @var array
+     */
+    protected $cities = [];
+
+     public function __construct(
+         CountryService $countryService,
+         array $availableCurrencies,
+         array $formData){
+
+         $this->availableCurrencies = $availableCurrencies;
          $this->countryService = $countryService;
+         $this->cities = !empty($formData['cities']) ? $formData['cities'] : [] ;
 
      }
 
@@ -45,7 +57,8 @@ class HotelSearchForm  extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
 
-        $cities = array();
+        $cities = $this->cities;
+
 
         $builder
             ->add('country', ChoiceType::class , array(
@@ -56,13 +69,17 @@ class HotelSearchForm  extends AbstractType
                     /** @var $country  Country */
                     return $country->getNiceName();
                 },
+                'choice_value' => 'id'
             ))
             ->add('city', EntityType::class , array(
                 'label' => 'City',
                 'class' => 'Oni\CoreBundle\Entity\City',
                 'placeholder' => 'Select City',
                 'choices' => $cities,
-                'empty_data'  => '__select country first__'
+                'choice_label' => function($city, $key, $index) {
+                    /** @var $city  City */
+                    return $city->getCityName();
+                },
             ))
             ->add('nationality', ChoiceType::class , array(
                 'label' => 'Nationality',
@@ -85,7 +102,8 @@ class HotelSearchForm  extends AbstractType
                 ),
                 'constraints' => array(
                     new Date(),
-                    new GreaterThanOrEqual('today')
+                    new GreaterThanOrEqual('today'),
+                    //new CheckOutCheckIn()
                 ),
             ))
             ->add('checkOut', DateType::class , array(
@@ -98,7 +116,8 @@ class HotelSearchForm  extends AbstractType
                 ),
                 'constraints' => array(
                     new Date(),
-                    new GreaterThan('today')
+                    new GreaterThan('today'),
+                    //new CheckOutCheckIn()
                 ),
             ))
             ->add('nationality', ChoiceType::class , array(
@@ -110,10 +129,6 @@ class HotelSearchForm  extends AbstractType
                 },
 
             ))
-//            ->add('availableOnly', CheckboxType::class, array(
-//              'label' => 'Available Only',
-//              'required' => false
-//            ))
             ->add('rating', ChoiceType::class, array(
                 'label' =>  'Rating',
                 'choices' => array(
@@ -125,25 +140,40 @@ class HotelSearchForm  extends AbstractType
                 ),
                 'multiple' => true
             ))
-            ->add('currency', CurrencyType::class)
-            ->add('roomType', ChoiceType::class, array(
-                'label' => 'Room Type',
-                'choices' => array(
-                    'Single' => 0,
-                    'Double' => 1,
-                    'King'   => 3
-                ),
-                'multiple' => false
-            ))
+
+
             ->add('numberOfRooms', ChoiceType::class , array(
               'label' => 'Rooms',
               'required' => true,
-              'choices' => [ 1,2,3,4,5,6,7,8,9,10 ]
+              'choices' => [ 1 => 1 ,2,3,4,5,6,7,8,9,10 ]
+            ))
+            ->add('adults', ChoiceType::class , array(
+                'label' => 'Adults',
+                'required' => true,
+                'choices' => [ 1 => 1 ,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18 ]
+            ))
+            ->add('children', ChoiceType::class , array(
+                'label' => 'Children',
+                'placeholder' => '0',
+                'required' => false,
+                'choices' => [ 1 => 1 ,2,3,4,5,6,7,8,9,10 ]
             ))
             ->add('search', SubmitType::class , array(
                 'label' => 'Search'
-            ))
-        ;
+            ));
+        if ($this->availableCurrencies) {
+            $builder->add( 'currency', ChoiceType::class, array(
+                    'label' => 'Currency',
+                    'placeholder' => 'Select Currency',
+                    'choices' => $this->countryService->getCurrenciesByCurrencyCodes($this->availableCurrencies),
+                    'choice_label' => function($currency, $key, $index) {
+                        /** @var Currency $currency */
+                        return $currency->getCurrencyName();
+                    },
+                    'choice_value' => 'id'
+                )
+            );
+        }
 
     }
 
