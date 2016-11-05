@@ -10,6 +10,7 @@ use Oni\TravelPortBundle\Form\Front\HotelSearchForm;
 use Oni\TravelPortBundle\Providers\ProviderContainer;
 use Oni\TravelPortBundle\TravelPortGlobals;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class HotelSearchController extends CoreController
 {
@@ -17,34 +18,37 @@ class HotelSearchController extends CoreController
     /**
      * @var \Oni\TravelPortBundle\Form\Front\HotelSearchForm
      */
-    protected $hotelSearchForm;
+    private $hotelSearchForm;
 
     /**
      * @var \Symfony\Component\HttpFoundation\Request
      */
-    protected $request;
+    private $request;
 
     /**
      * @var \Oni\TravelPortBundle\Providers\ProviderContainer
      */
-    protected $providerContainer;
+    private $providerContainer;
 
-    public function __construct(HotelSearchForm $hotelSearchForm, ProviderContainer $providerContainer) {
+    /**
+     * @var \Symfony\Component\HttpFoundation\Session\Session
+     */
+    private $session;
+
+    public function __construct(HotelSearchForm $hotelSearchForm, ProviderContainer $providerContainer, Session $session) {
 
         $this->hotelSearchForm = $hotelSearchForm;
         $this->providerContainer = $providerContainer;
+        $this->session = $session;
 
     }
 
     public function indexAction(Request $request)
     {
 
-
         $this->denyAccessUnlessGranted('ROLE_USER', null, 'Unable to access this page!');
 
-
-
-        $searchResults = array();
+        $searchResults = array('hotel');
         $hotelSearchForm = $this->createForm(HotelSearchForm::class);
 
         if ($request->isMethod('POST')) {
@@ -68,7 +72,6 @@ class HotelSearchController extends CoreController
             }
 
         }
-
 
         return $this->render('@travel_port/'.$this->travelPortTheme.'/hotel_search.html.twig', array(
             'hotelSearchForm' => $hotelSearchForm->createView(),

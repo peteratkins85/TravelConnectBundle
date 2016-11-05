@@ -1,17 +1,24 @@
 
-oni_travel_port_index:
+oni_travel_port_user_index:
     path:     /admin/travel-connect/users
     defaults: { _controller: oni_travel_port_user_controller:indexAction }
 
-oni_travel_port_add:
+oni_travel_port_user_add:
     path:     /admin/travel-connect/user/add
     defaults: { _controller: oni_travel_port_user_controller:addAction }
 
-oni_travel_port_edit:
+oni_travel_port_user_edit:
     path:     /admin/travel-connect/user/edit/{id}
     defaults: { _controller: oni_travel_port_user_controller:editAction }
 
 #Front End Routes
+
+oni_travel_port_front_home:
+    path:      /
+    defaults:
+        _controller: FrameworkBundle:Redirect:urlRedirect
+        path: /travelportal/hotel-search
+
 
 oni_travel_port_login:
     path: /travelportal/login

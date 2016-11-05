@@ -12,6 +12,7 @@ namespace Oni\TravelPortBundle\Factory\Controller\Front;
 use Oni\CoreBundle\Factory\CoreAbstractFactory;
 use Oni\TravelPortBundle\Controller\Front\AccountController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Acl\Permission\MaskBuilder;
 
 class AccountControllerFactory extends CoreAbstractFactory{
 

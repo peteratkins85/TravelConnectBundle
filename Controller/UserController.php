@@ -3,23 +3,27 @@
 namespace Oni\TravelPortBundle\Controller;
 
 use Oni\CoreBundle\Controller\CoreController;
-use Oni\TravelPortBundle\Entity\Repository\UsersRepository;
+use Oni\TravelPortBundle\Services\UserService;
 
 class UserController extends CoreController
 {
 
-    public function __construct(UsersRepository $travelPortUserRepository) {
+    /**
+     * @var \Oni\TravelPortBundle\Services\UserService
+     */
+    private $userService;
 
-        $this->travelPortUserRepository = $travelPortUserRepository;
-
+    public function __construct(UserService $userService)
+    {
+        $this->userService = $userService;
     }
 
     public function indexAction()
     {
-        $travelPortUsers = $this->travelPortUserRepository->findAll();
+        $travelPortUsers = $this->userService->findAll();
 
         return $this->render('TravelPortBundle:User:index.html.twig', array(
-            'travelPort' => $travelPortUsers,
+            'users' => $travelPortUsers,
         ));
     }
 

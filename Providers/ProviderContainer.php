@@ -10,9 +10,11 @@ namespace Oni\TravelPortBundle\Providers;
 
 
 use Oni\TravelPortBundle\Exceptions\InvalidProviderRequestException;
+use Oni\TravelPortBundle\Providers\DataObjects\Hotel\Hotel;
 use Oni\TravelPortBundle\ProviderSupport\HotelProviderInterface;
 use Oni\TravelPortBundle\ProviderSupport\ProviderInterface;
 use Oni\TravelPortBundle\TravelPortGlobals;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -34,16 +36,19 @@ class ProviderContainer
     protected $providers;
 
     protected $providerContainerSession;
+
     
     public function __construct(ContainerInterface $container, Session $session)
     {
+        $this->id = Uuid::uuid4();
         $this->providers = array();
         $this->container = $container;
         $this->session = $session;
         $this->setProviderContainerSession();
     }
 
-    public function setProviderContainerSession(){
+    private function setProviderContainerSession()
+    {
 
         if ($providerSession = $this->session->get(TravelPortGlobals::SESSION_PROVIDER_RESULT)){
 
@@ -57,7 +62,23 @@ class ProviderContainer
 
     }
 
-    public function updateProviderContainerSession($providerContainerArray){
+    public function getProviderContainerSessionValueByKey($key)
+    {
+
+        $sessionContainer = $this->session->get(TravelPortGlobals::SESSION_PROVIDER_RESULT);
+
+        if (!empty($sessionContainer[$key])){
+
+            return $sessionContainer[$key];
+
+        }
+
+        return false;
+
+    }
+
+    private function updateProviderContainerSession($providerContainerArray)
+    {
 
         $this->session->set(TravelPortGlobals::SESSION_PROVIDER_RESULT, $providerContainerArray);
 
@@ -69,8 +90,15 @@ class ProviderContainer
     }
 
 
+    /**
+     * @param $formData
+     *
+     * @return mixed
+     */
+    public function processHotelSearchRequest($formData)
+    {
 
-    public function processHotelSearchRequest($formData){
+        $responses = false;
 
         foreach ($this->providers as $provider){
 
@@ -78,16 +106,19 @@ class ProviderContainer
 
                 try {
 
-                    $this->response[] = $provider->searchHotel( $formData );
+                    $response = $provider->searchHotel($formData)?: false;
+
+                    if (!empty($response)) {
+                        $responses[] = $response;
+                    }
 
                 }catch (InvalidProviderRequestException $e) {
 
-                    echo $e->getMessage(); exit;
-                    //TODO log error
+                    //TODO log errors
 
                 }catch (\Exception $e){
 
-                    echo $e->getMessage(); exit;
+                   //TODO log errors
 
                 }
 
@@ -95,13 +126,14 @@ class ProviderContainer
 
         }
 
-        return $this->processResults($this->response, self::PROVIDER_HOTEL_SEARCH);
-
-
+        return $this->processResults($responses, self::PROVIDER_HOTEL_SEARCH);
 
     }
 
     public function processResults($response, $requestType){
+
+        if (empty($response))
+            return false;
 
         switch($requestType){
 
@@ -109,9 +141,10 @@ class ProviderContainer
 
                 $uniqueSearchId = $this->getUniqueSearchId();
                 $response['uniqueSearchId'] = $uniqueSearchId;
-
+                
                 $this->providerContainerSession[TravelPortGlobals::SESSION_HOTEL_SEARCH_RESULTS][$this->getUniqueSearchId()] = $response;
                 $this->updateProviderContainerSession($this->providerContainerSession);
+                
                 return $response;
 
             default:
@@ -119,10 +152,8 @@ class ProviderContainer
 
         }
 
-
-
-
     }
+
 
     protected function getUniqueSearchId(){
 

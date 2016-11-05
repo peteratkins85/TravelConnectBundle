@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Agency
  *
- * @ORM\Table(name="agencies")
+ * @ORM\Table(name="oni_agency")
  * @ORM\Entity(repositoryClass="Oni\TravelPortBundle\Repository\CompaniesRepository")
  */
 class Agency
@@ -156,4 +156,3 @@ class Agency
         return $this->ceditCurrencyId;
     }
 }
-

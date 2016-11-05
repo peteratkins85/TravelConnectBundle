@@ -166,6 +166,12 @@ class User implements UserInterface
      */
     protected $groups;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="Oni\TravelPortBundle\Entity\Agency")
+     * @ORM\JoinColumn(name="oni_agency" , referencedColumnName="id")
+     */
+    private $agency;
+
 
     /**
      * @var integer
@@ -173,15 +179,17 @@ class User implements UserInterface
     private $locked = 0;
 
 
-    public function __construct(){
+    public function __construct()
+    {
 
-        $this->salt = base_convert(sha1(uniqid(mt_rand(), true)), 16, 36);
-        $this->enabled = 1;
-        $this->active = 1;
-        $this->locked = 0;
-        $this->expired = 0;
-        $this->roles = array();
-        $this->loggedInn = 0;
+        $this->salt               = base_convert(sha1(uniqid(mt_rand(), true)),
+            16, 36);
+        $this->enabled            = 1;
+        $this->active             = 1;
+        $this->locked             = 0;
+        $this->expired            = 0;
+        $this->roles              = array();
+        $this->loggedInn          = 0;
         $this->credentialsExpired = 0;
 
     }
@@ -196,7 +204,8 @@ class User implements UserInterface
      *
      * @see AccountExpiredException
      */
-    public function isAccountNonExpired() {
+    public function isAccountNonExpired()
+    {
         return true;
     }
 
@@ -210,7 +219,8 @@ class User implements UserInterface
      *
      * @see LockedException
      */
-    public function isAccountNonLocked() {
+    public function isAccountNonLocked()
+    {
         return true;
     }
 
@@ -224,7 +234,8 @@ class User implements UserInterface
      *
      * @see CredentialsExpiredException
      */
-    public function isCredentialsNonExpired() {
+    public function isCredentialsNonExpired()
+    {
         //Not in use currently
         return true;
     }
@@ -239,10 +250,12 @@ class User implements UserInterface
      *
      * @see DisabledException
      */
-    public function isEnabled() {
-        if (!$this->enabled){
+    public function isEnabled()
+    {
+        if ( ! $this->enabled) {
             return false;
         }
+
         return true;
     }
 
@@ -262,9 +275,10 @@ class User implements UserInterface
      *
      * @return Role[] The user roles
      */
-    public function getRoles() {
-        
-        foreach ($this->groups as $group){
+    public function getRoles()
+    {
+
+        foreach ($this->groups as $group) {
 
             $roles = array_merge($this->roles, $group->getRoles());
 
@@ -278,7 +292,6 @@ class User implements UserInterface
     }
 
 
-
     /**
      * Returns the password used to authenticate the user.
      *
@@ -287,7 +300,8 @@ class User implements UserInterface
      *
      * @return string The password
      */
-    public function getPassword() {
+    public function getPassword()
+    {
         return $this->password;
     }
 
@@ -298,7 +312,8 @@ class User implements UserInterface
      *
      * @return string|null The salt
      */
-    public function getSalt() {
+    public function getSalt()
+    {
         return $this->salt;
     }
 
@@ -307,7 +322,8 @@ class User implements UserInterface
      *
      * @return string The username
      */
-    public function getUsername() {
+    public function getUsername()
+    {
         return $this->username;
     }
 
@@ -317,7 +333,8 @@ class User implements UserInterface
      * This is important if, at any given point, sensitive information like
      * the plain-text password is stored on this object.
      */
-    public function eraseCredentials() {
+    public function eraseCredentials()
+    {
         $this->plainPassword = null;
     }
 
@@ -690,8 +707,6 @@ class User implements UserInterface
         return $this->modifiedBy;
     }
 
-
-
     /**
      * Gets the groups granted to the user.
      *
@@ -705,14 +720,14 @@ class User implements UserInterface
 
     public function addGroup(Group $group)
     {
-        if (!$this->getGroups()->contains($group)) {
+        if ( ! $this->getGroups()->contains($group)) {
             $this->getGroups()->add($group);
         }
 
         return $this;
     }
 
-    public function removeGroup(GroupInterface $group)
+    public function removeGroup($group)
     {
         if ($this->getGroups()->contains($group)) {
             $this->getGroups()->removeElement($group);
@@ -721,7 +736,8 @@ class User implements UserInterface
         return $this;
     }
 
-    public function unserialize($serialized){
+    public function unserialize($serialized)
+    {
 
         $data = unserialize($serialized);
         // add a few extra elements in the array to ensure that we have enough keys when unserializing
@@ -737,27 +753,26 @@ class User implements UserInterface
 
     }
 
-    public function serialize(){
+    public function serialize()
+    {
 
         return serialize(array(
             $this->password,
             $this->salt,
             $this->username,
-            $this->email
+            $this->email,
         ));
 
     }
 
-    public function getAgency() {
-        // TODO: Implement getAgency() method.
-    }
 
     /**
      * Tells if the the given user has the super admin role.
      *
      * @return boolean
      */
-    public function isSuperAdmin() {
+    public function isSuperAdmin()
+    {
         // TODO: Implement isSuperAdmin() method.
     }
 
@@ -768,7 +783,8 @@ class User implements UserInterface
      *
      * @return self
      */
-    public function setLocked( $boolean ) {
+    public function setLocked($boolean)
+    {
         $this->locked = $boolean;
     }
 
@@ -777,7 +793,8 @@ class User implements UserInterface
      *
      * @return string
      */
-    public function getConfirmationToken() {
+    public function getConfirmationToken()
+    {
         // TODO: Implement getConfirmationToken() method.
     }
 
@@ -788,7 +805,8 @@ class User implements UserInterface
      *
      * @return self
      */
-    public function setConfirmationToken( $confirmationToken ) {
+    public function setConfirmationToken($confirmationToken)
+    {
         // TODO: Implement setConfirmationToken() method.
     }
 
@@ -799,7 +817,8 @@ class User implements UserInterface
      *
      * @return self
      */
-    public function setPasswordRequestedAt( \DateTime $date = null ) {
+    public function setPasswordRequestedAt(\DateTime $date = null)
+    {
         // TODO: Implement setPasswordRequestedAt() method.
     }
 
@@ -810,6 +829,32 @@ class User implements UserInterface
      *
      * @return boolean true if the user's password request is non expired, false otherwise
      */
-    public function isPasswordRequestNonExpired( $ttl ) {
+    public function isPasswordRequestNonExpired($ttl)
+    {
         // TODO: Implement isPasswordRequestNonExpired() method.
-}}
+    }
+
+    /**
+     * Set agency
+     *
+     * @param \Oni\TravelPortBundle\Entity\Agency $agency
+     *
+     * @return User
+     */
+    public function setAgency(\Oni\TravelPortBundle\Entity\Agency $agency = null)
+    {
+        $this->agency = $agency;
+
+        return $this;
+    }
+
+    /**
+     * Get agency
+     *
+     * @return \Oni\TravelPortBundle\Entity\Agency
+     */
+    public function getAgency()
+    {
+        return $this->agency;
+    }
+}

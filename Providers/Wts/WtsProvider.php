@@ -8,6 +8,9 @@ use Oni\CoreBundle\Entity\Country;
 use Oni\CoreBundle\Entity\Currency;
 use Oni\CoreBundle\Entity\Nationality;
 use Oni\TravelPortBundle\Exceptions\InvalidProviderRequestException;
+use Oni\TravelPortBundle\Providers\DataObjects\Hotel\Hotel;
+use Oni\TravelPortBundle\Providers\DataObjects\Hotel\HotelImage;
+use Oni\TravelPortBundle\Providers\DataObjects\Hotel\HotelRoom;
 use Oni\TravelPortBundle\ProviderSupport\AbstractProvider;
 use Oni\TravelPortBundle\ProviderSupport\HotelProviderInterface;
 use Oni\TravelPortBundle\TravelPortGlobals;
@@ -30,7 +33,7 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
     /** @var  ContainerInterface */
     protected $container;
 
-    /** @var  WtsApiClient  */
+    /** @var  WtsApiClient */
     protected $apiClient;
 
     /** @var array */
@@ -65,15 +68,16 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     public function __construct(ContainerInterface $container)
     {
-        $this->container = $container;
-        $this->apiClient = $this->container->get('oni_travel_port_provider_client.wts');
+        $this->container    = $container;
+        $this->apiClient    = $this->container->get('oni_travel_port_provider_client.wts');
         $this->cacheManager = $container->get('snc_redis.default');
     }
 
-    protected function setParams($requestData){
+    protected function setParams($requestData)
+    {
 
-        $this->country  = isset($requestData['country'])  ? $requestData['country']  : null;
-        $this->city     = isset($requestData['city'])     ? $requestData['city']     : null;
+        $this->country  = isset($requestData['country']) ? $requestData['country'] : null;
+        $this->city     = isset($requestData['city']) ? $requestData['city'] : null;
         $this->currency = isset($requestData['currency']) ? $requestData['currency'] : null;
 
     }
@@ -83,64 +87,66 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
         $this->setParams($hotelFormData);
 
-        $country = $this->getWtsCountryCode($hotelFormData['country']);
-        $city  = $this->getWtsCityCode($hotelFormData['city'], $country);
-        $nationality = $this->getWtsNationalityCode($hotelFormData['nationality']);
-        $ratings = $this->formatRating($hotelFormData['rating']);
-        $checkInDate = $hotelFormData['checkIn']->format('d/m/Y');
-        $checkOutDate = $hotelFormData['checkOut']->format('d/m/Y');
-        $interval = $hotelFormData['checkIn']->diff($hotelFormData['checkOut']);
+        $country           = $this->getWtsCountryCode($hotelFormData['country']);
+        $city              = $this->getWtsCityCode($hotelFormData['city'],
+            $country);
+        $nationality       = $this->getWtsNationalityCode($hotelFormData['nationality']);
+        $ratings           = $this->formatRating($hotelFormData['rating']);
+        $checkInDate       = $hotelFormData['checkIn']->format('d/m/Y');
+        $checkOutDate      = $hotelFormData['checkOut']->format('d/m/Y');
+        $interval          = $hotelFormData['checkIn']->diff($hotelFormData['checkOut']);
         $this->totalNights = $interval->format('%a');
-        $currency = $hotelFormData['currency']->getCurrencyCode();
-        $availableOnly = 1;
-        $rooms = $hotelFormData['numberOfRooms'];
-        $adults = $hotelFormData['adults'];
-        $children = $hotelFormData['children'];
-        
+        $currency          = $hotelFormData['currency']->getCurrencyCode();
+        $availableOnly     = 1;
+        $rooms             = $hotelFormData['numberOfRooms'];
+        $adults            = $hotelFormData['adults'];
+        $children          = $hotelFormData['children'];
 
-        $roomDetail = '['.json_encode(array(
+
+        $roomDetail = '[' . json_encode(array(
                     'numberOfAdults' => $adults,
-                    'numberOfChild' => '0',
-                    'ChildAge' => '0'
+                    'numberOfChild'  => '0',
+                    'ChildAge'       => '0',
                 )
-        ).']';
+            ) . ']';
 
         $request = array(
-            'action'            => 'hotel_search',
-            'checkin_date'      => $checkInDate,
-            'checkout_date'     => $checkOutDate,
-            'sel_country'       => $country,
-            'sel_city'          => $city,
-            'chk_ratings'       => $ratings,
-            'sel_nationality'   => $nationality,
-            'sel_currency'      => $currency,
-            'availableonly'     => $availableOnly,
-            'number_of_rooms'   => $rooms,
-            'gzip'              => 0,
-            'roomDetails'       => $roomDetail
+            'action'                => 'hotel_search',
+            'checkin_date'          => $checkInDate,
+            'checkout_date'         => $checkOutDate,
+            'sel_country'           => $country,
+            'sel_city'              => $city,
+            'chk_ratings'           => $ratings,
+            'sel_nationality'       => $nationality,
+            'sel_currency'          => $currency,
+            'availableonly'         => $availableOnly,
+            'number_of_rooms'       => $rooms,
+            'gzip'                  => 1,
+            'limit_hotel_room_type' => 1,
+            'roomDetails'           => $roomDetail,
         );
 
-        $response = $this->formatResponse($this->apiClient->searchHotel($request), self::HOTEL_SEARCH_REQUEST);
+        $response = $this->formatResponse($this->apiClient->searchHotel($request),
+            self::HOTEL_SEARCH_REQUEST);
+
 
         return $response;
 
 
     }
 
-    protected function formatResponse($response, $requestType){
+    protected function formatResponse($response, $requestType)
+    {
 
         $this->wtsResponse = $response;
+        if ($response->TotalCount < 1) {
+            return false;
+        }
 
         switch ($requestType) {
 
             case self::HOTEL_SEARCH_REQUEST :
-                $response = [
-                    'providerKey'      => $this->getProviderKey(),
-                    'hotels'           => $this->formatHotelList( $response->HotelList ),
-                    'providerResponse' => $response,
-                    'currency'         => $this->currency,
-                    'city'             => $this->city
-                ];
+                $response = $this->compileHotelList($response->HotelList);
             default:
 
         }
@@ -149,36 +155,74 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    protected function formatHotelList($hotelList){
+    /**
+     * @param $hotelList
+     *
+     * @return array
+     */
+    protected function compileHotelList($hotelList):array
+    {
 
-        $hotels = [];
-
+        $hotels    = [];
         $hotelName = [];
 
-
-        foreach ($hotelList as $hotel){
+        foreach ($hotelList as $hotel) {
 
             $serializedHotelName = $this->serializeValue($hotel->HotelName);
 
-            if (!isset($hotelName[$serializedHotelName])) {
+            if ( ! isset($hotelName[$serializedHotelName])) {
 
-                $hotelDetails = $this->getHotelDetails($this->wtsResponse->SearchUniqueId, $hotel->HotelId);
+                $hotelDetails = $this->getHotelDetails($this->wtsResponse->SearchUniqueId,
+                    $hotel->HotelId);
 
-                $hotels[] = [
-                    'hotelResponse'   => $hotel,
-                    'name'            => ucwords( strtolower( $hotel->HotelName ) ),
-                    'providerHotelId' => $hotel->HotelId,
-                    'description'     => $hotelDetails->Description,
-                    'hotelImages'     => $this->formatHotelImages( $hotelDetails->HotelImages ),
-                    'startRate'       => round( $hotel->TotalCharges ),
-                    'latitude'        => $hotelDetails->Latitude,
-                    'totalNights'     => $this->totalNights,
-                    'address'         => $hotelDetails->HotelAddress,
-                    'longitude'       => $hotelDetails->Longitude,
-                    'currency'        => $hotel->RateCurrencyCode,
-                    'rating'          => (int) $hotelDetails->HotelRating,
-                    'roomDetails'     => $this->formatRoomList( $hotel->HotelProperty )
-                ];
+                $hotel = new Hotel();
+                $hotel->setHotelResponse($hotel)
+                    ->setUniqueProviderRequestId($this->wtsResponse->searchUniqueId)
+                    ->setProviderKey($this->getProviderKey())
+                    ->setProviderHotelId($hotel->HotelId)
+                    ->setName(ucwords(strtolower($hotel->HotelName)))
+                    ->setDescription($hotelDetails->Description)
+                    ->setStartRate(round($hotel->TotalCharges))
+                    ->setLatitude($hotelDetails->Latitude)
+                    ->setLongitude($hotelDetails->Longitude)
+                    ->setTotalNights($this->totalNights)
+                    ->setAddress($hotelDetails->HotelAddress)
+                    ->setCurrencyCode($hotel->RateCurrencyCode)
+                    ->setRating((int)$hotelDetails->HotelRating)
+                    ->setCurrency($this->currency)
+                    ->getCity($this->city);
+
+
+                foreach ($hotelDetails->HotelImages as $hotelImage) {
+
+                    $hotelImage = new HotelImage();
+                    $hotelImage->setLargeImage($hotelImage->BigUrl)
+                        ->setThumbImage($hotelImage->ThumbnailUrl);
+
+                    $hotel->addHotelImage($hotelImage);
+
+                }
+
+                foreach ($hotel->HotelProperty as $room) {
+
+                    if (isset($room->RoomRates[0])) {
+
+                        $hotelRoom = new HotelRoom();
+
+                        $hotelRoom->setProviderRoomResponse($room->RoomRates[0])
+                            ->setNightlyRate(round($room->RoomRates[0]->RateBreakup[0]->DisplayNightlyRate))
+                            ->setMealBasis($room->RoomRates[0]->MealBasis)
+                            ->setRoomName($room->RoomRates[0]->RoomCategory)
+                            ->setTotalRate(round($room->DisplayRoomRate))
+                            ->setRoomType($room->RoomRates[0]->RoomType);
+
+                        $hotel->addRoom($hotelRoom);
+
+                    }
+
+                }
+
+                $hotels[] = $hotel;
 
                 $hotelName[$serializedHotelName] = true;
 
@@ -186,25 +230,27 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
         }
 
-        return json_decode(json_encode($hotels));
+        return $hotels;
 
     }
 
-    protected function formatRoomList($roomList){
+
+    protected function formatRoomList($roomList)
+    {
 
         $rooms = [];
 
-        foreach ($roomList as $room){
+        foreach ($roomList as $room) {
 
             if (isset($room->RoomRates[0])) {
 
                 $rooms[] = [
                     'providerRoomResponse' => $room->RoomRates[0],
-                    'totalRate'   => round($room->DisplayRoomRate),
-                    'roomType'    => $room->RoomRates[0]->RoomType,
-                    'roomName'    => $room->RoomRates[0]->RoomCategory,
-                    'mealBasis'   => $room->RoomRates[0]->MealBasis,
-                    'nightlyRate' => round($room->RoomRates[0]->RateBreakup[0]->DisplayNightlyRate),
+                    'totalRate'            => round($room->DisplayRoomRate),
+                    'roomType'             => $room->RoomRates[0]->RoomType,
+                    'roomName'             => $room->RoomRates[0]->RoomCategory,
+                    'mealBasis'            => $room->RoomRates[0]->MealBasis,
+                    'nightlyRate'          => round($room->RoomRates[0]->RateBreakup[0]->DisplayNightlyRate),
                 ];
 
             }
@@ -215,28 +261,30 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    public function serializeValue($value){
+    public function serializeValue($value)
+    {
 
-        return md5(str_replace(' ', '' , strtoupper($value)));
+        return md5(str_replace(' ', '', strtoupper($value)));
 
     }
 
-    private function getHotelDetails($wtsSearchId, $wtsHotelId){
+    private function getHotelDetails($wtsSearchId, $wtsHotelId)
+    {
 
-        $cacheKey = 'WTS-API-HOTEL-DETAILS_'.$wtsHotelId;
+        $cacheKey = 'WTS-API-HOTEL-DETAILS_' . $wtsHotelId;
 
-        if ($this->cacheManager->exists($cacheKey)){
+        if ($this->cacheManager->exists($cacheKey)) {
 
             return json_decode($this->cacheManager->get($cacheKey));
 
-        }else {
+        } else {
 
             $request = array(
                 'hotelId'  => $wtsHotelId,
-                'searchId' => $wtsSearchId
+                'searchId' => $wtsSearchId,
             );
 
-            $response =  $this->apiClient->getHotelDetails( $request );
+            $response = $this->apiClient->getHotelDetails($request);
 
             $this->cacheManager->set($cacheKey, json_encode($response));
 
@@ -246,15 +294,16 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    protected function formatHotelImages($hotelImages){
+    protected function addHotelImages($hotelImages)
+    {
 
         $images = [];
 
-        foreach ($hotelImages as $hotelImage){
+        foreach ($hotelImages as $hotelImage) {
 
             $images[] = [
                 'thumbImage' => $hotelImage->ThumbnailUrl,
-                'largeImage' => $hotelImage->BigUrl
+                'largeImage' => $hotelImage->BigUrl,
             ];
 
         }
@@ -264,30 +313,30 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
     }
 
 
+    private function formatRating($rating)
+    {
 
-
-    private function formatRating($rating){
-
-        foreach ($rating as &$rate){
-            $rate = $rate.'.0';
+        foreach ($rating as &$rate) {
+            $rate = $rate . '.0';
         }
-        $rating = implode(',',$rating);
+        $rating = implode(',', $rating);
 
         return $rating;
 
     }
 
 
-    private function getWtsCountryCode($countryData){
+    private function getWtsCountryCode($countryData)
+    {
 
-        $counties = $this->getWtsCountries();
+        $counties       = $this->getWtsCountries();
         $wtsCountryCode = false;
 
-        if (is_array($counties) && !empty($counties)) {
+        if (is_array($counties) && ! empty($counties)) {
 
-            foreach ( $counties as $country ) {
+            foreach ($counties as $country) {
 
-                if (strtoupper(trim($country->name)) == strtoupper(trim($countryData->getName()))){
+                if (strtoupper(trim($country->name)) == strtoupper(trim($countryData->getName()))) {
 
                     $wtsCountryCode = $country->code;
                     break;
@@ -296,11 +345,11 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
             }
 
-            if (!$wtsCountryCode){
-                throw new \Exception('Wts code not found for country '. $countryData->getName(). ' !');
+            if ( ! $wtsCountryCode) {
+                throw new \Exception('Wts code not found for country ' . $countryData->getName() . ' !');
             }
 
-        }else{
+        } else {
 
             throw new \Exception('Unable to retrieve country list from WTS API');
 
@@ -310,16 +359,17 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    private function getWtsCityCode($cityData, $wtsCountryCode){
+    private function getWtsCityCode($cityData, $wtsCountryCode)
+    {
 
-        $cities = $this->apiClient->getCities($wtsCountryCode);
+        $cities      = $this->apiClient->getCities($wtsCountryCode);
         $wtsCityCode = false;
 
-        if (!empty($cities->citiy_info) && is_array($cities->citiy_info)) {
+        if ( ! empty($cities->citiy_info) && is_array($cities->citiy_info)) {
 
-            foreach ($cities->citiy_info as $city){
+            foreach ($cities->citiy_info as $city) {
 
-                if (strtoupper(trim($city->name)) == strtoupper(trim($cityData->getCityName()))){
+                if (strtoupper(trim($city->name)) == strtoupper(trim($cityData->getCityName()))) {
 
                     $wtsCityCode = $city->city_code;
                     break;
@@ -328,11 +378,11 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
             }
 
-            if (!$wtsCityCode){
-                throw new \Exception('Wts code not found for city '. $cityData->getCityName(). ' !');
+            if ( ! $wtsCityCode) {
+                throw new \Exception('Wts code not found for city ' . $cityData->getCityName() . ' !');
             }
 
-        }else{
+        } else {
 
             throw new \Exception('Unable to retrieve city list from WTS API');
 
@@ -342,16 +392,17 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    private function getWtsNationalityCode(Nationality $nationalityData){
+    private function getWtsNationalityCode(Nationality $nationalityData)
+    {
 
         $wtsNationalityCode = false;
-        $nationalities = $this->getWtsNationalities();
+        $nationalities      = $this->getWtsNationalities();
 
-        if (!empty($nationalities->nationalities_info) && is_array($nationalities->nationalities_info)) {
+        if ( ! empty($nationalities->nationalities_info) && is_array($nationalities->nationalities_info)) {
 
-            foreach ($nationalities->nationalities_info as $nationality){
+            foreach ($nationalities->nationalities_info as $nationality) {
 
-                if (strtoupper(trim($nationality->Nationality)) == strtoupper(trim($nationalityData->getNationality()))){
+                if (strtoupper(trim($nationality->Nationality)) == strtoupper(trim($nationalityData->getNationality()))) {
 
                     $wtsNationalityCode = $nationality->Code;
                     break;
@@ -360,11 +411,11 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
             }
 
-            if (!$wtsNationalityCode){
-                throw new \Exception('Wts code not found for nationality '. $nationalityData->getNationality(). ' !');
+            if ( ! $wtsNationalityCode) {
+                throw new \Exception('Wts code not found for nationality ' . $nationalityData->getNationality() . ' !');
             }
 
-        }else{
+        } else {
 
             throw new \Exception('Unable to retrieve nationality list from WTS API');
 
@@ -375,9 +426,10 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
     }
 
 
-    private function getWtsCountries(){
+    private function getWtsCountries()
+    {
 
-        if (empty($this->wtsCountries)){
+        if (empty($this->wtsCountries)) {
             $this->wtsCountries = $this->apiClient->getCountries();
         }
 
@@ -385,9 +437,10 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
 
     }
 
-    private function getWtsNationalities(){
+    private function getWtsNationalities()
+    {
 
-        if (empty($this->wtsNationalities)){
+        if (empty($this->wtsNationalities)) {
             $this->wtsNationalities = $this->apiClient->getNationalities();
         }
 
@@ -396,7 +449,8 @@ class WtsProvider extends AbstractProvider implements HotelProviderInterface
     }
 
 
-    public function bookHotelReservation() {
+    public function bookHotelReservation()
+    {
         // TODO: Implement bookHotel() method.
     }
 }

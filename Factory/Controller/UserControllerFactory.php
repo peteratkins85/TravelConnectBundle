@@ -6,15 +6,12 @@
  * Time: 01:21
  */
 
-namespace Oni\CoreBundle\Factory;
+namespace Oni\TravelPortBundle\Factory\Controller;
 
+use Oni\CoreBundle\Factory\CoreAbstractFactory;
 use Oni\TravelPortBundle\Controller\UserController;
-use Oni\TravelPortBundle\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Oni\CoreBundle\Controller\CoreController;
-use Doctrine\ORM\EntityRepository;
-
 
 
 class UserControllerFactory extends CoreAbstractFactory
@@ -31,13 +28,13 @@ class UserControllerFactory extends CoreAbstractFactory
      */
     public function getService(ContainerInterface $serviceContainer){
 
-        $userRepository = $serviceContainer->get('doctrine.orm.default_entity_manager')->getRepository(User::class);
+        $userService = $serviceContainer->get('oni_travel_port_user_service');
 
         $userController = new UserController(
-            $userRepository
+            $userService
         );
 
-        $userController = $this->prepareController($userController);
+        $userController = $this->injectControllerDependencies($userController);
 
         return $userController;
 
