@@ -53,10 +53,10 @@
                                                                             <i class='icon-edit'></i>
                                                                             {{ 'edit'|trans }}
                                                                         </a>
-                                                                        <a class='btn btn-danger btn-mini oni-delete-action' data-toggle="modal" delete-msg="{{ 'modal-messages.delete.confirm.msg'|trans({'%name%': user.username , '%item%': 'product_bundle.product.category'|trans}) }}"  delete-url="{{ path('oni_travel_port_user_delete', {'userId':user.id }) }}" href='#confirm-delete'>
-                                                                            <i class='icon-remove'></i>
-                                                                            {{ 'delete'|trans }}
-                                                                        </a>
+                                                                        {#<a class='btn btn-danger btn-mini oni-delete-action' data-toggle="modal" delete-msg="{{ 'modal-messages.delete.confirm.msg'|trans({'%name%': user.username , '%item%': 'product_bundle.product.category'|trans}) }}"  delete-url="{{ path('oni_travel_port_user_edit', {'userId':user.id }) }}" href='#confirm-delete'>#}
+                                                                            {#<i class='icon-remove'></i>#}
+                                                                            {#{{ 'delete'|trans }}#}
+                                                                        {#</a>#}
                                                                     </div>
                                                                 </td>
                                                             </tr>

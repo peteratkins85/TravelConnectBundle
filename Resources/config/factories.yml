@@ -2,8 +2,6 @@ services:
     #Controllers
     oni_travel_port_user_controller_factory:
         class: Oni\TravelPortBundle\Factory\Controller\UserControllerFactory
-        calls:
-                            - [setContainer, ['@service_container']]
     #Forms
 
     #Repositories
